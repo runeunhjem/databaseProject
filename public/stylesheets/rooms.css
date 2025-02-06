@@ -1,0 +1,86 @@
+/* ✅ Ensures buttons align properly */
+button {
+  max-width: 150px !important;
+  margin: 5px 0;
+}
+
+/* ✅ Ensures rent button aligns properly */
+.right {
+  float: right;
+}
+
+/* ✅ Styles the room container */
+.list-group {
+  margin: 20px 0;
+}
+
+/* ✅ Makes room details visually distinct */
+.bg-info {
+  padding: 10px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+}
+
+/* ✅ Adds spacing for rows */
+.row {
+  margin-bottom: 10px;
+}
+
+/* ✅ Modal Styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ✅ Ensures modal is centered and well-styled */
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  width: 350px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ Close button */
+.close {
+  float: right;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ✅ Styles input fields */
+.form-group {
+  margin: 10px 0;
+  text-align: left;
+}
+
+/* ✅ Styles the confirm reservation button */
+#confirm-reservation {
+  width: 90%;
+  display: block;
+  margin: 15px auto 0; /* Centers the button */
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#confirm-reservation:hover {
+  background-color: #218838;
+}

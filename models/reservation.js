@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "Reservation",
       timestamps: false,
+      hasTrigger: true, // ✅ Let Sequelize know there's a trigger in MySQL
     }
   );
 

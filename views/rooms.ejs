@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rooms</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/stylesheets/rooms.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <h2 class="p-3 text-center">Choose a Room</h2>
+      <div class="list-group">
+        <% rooms.forEach(function(room) { %>
+        <div class="row px-3 py-2 w-100 align-items-center <%= room.isReserved ? 'bg-warning' : '' %>">
+          <span class="col py-2 bg-info text-white rounded">
+            Room for <%= room.capacity %> people
+            <span class="float-end">Daily cost: <%= room.price %></span>
+          </span>
+          <!-- Rent a Room Button -->
+          <button class="col-auto btn btn-primary mx-1 rent-room" data-id="<%= room.id %>">Rent</button>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+
+    <!-- ✅ Reservation Modal (Global, not inside loop) -->
+    <div id="reservationModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3 class="text-center">Book a Room</h3>
+        <div class="form-group">
+          <label for="start-date">Start Date:</label>
+          <input type="datetime-local" id="start-date" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label for="end-date">End Date:</label>
+          <input type="datetime-local" id="end-date" class="form-control" />
+        </div>
+        <button id="confirm-reservation">Confirm Reservation</button>
+      </div>
+    </div>
+
+    <!-- Include Reservation Script -->
+    <script src="/javascripts/makeReservation.js"></script>
+  </body>
+</html>
