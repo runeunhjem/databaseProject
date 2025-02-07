@@ -1,33 +1,102 @@
-/* ✅ Ensures buttons align properly */
-button {
-  max-width: 150px !important;
-  margin: 5px 0;
+/* ✅ Room List Styling */
+.room-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
 }
 
-/* ✅ Ensures rent button aligns properly */
-.right {
-  float: right;
+/* ✅ Room Card Styling */
+.room-card {
+  width: 320px;
+  background-color: #5d4037; /* Dark Brown */
+  padding: 15px;
+  border-radius: 8px;
+  margin: 10px 0;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* ✅ Styles the room container */
-.list-group {
-  margin: 20px 0;
+/* ✅ Highlight reserved rooms */
+.reserved-room {
+  background-color: #384138 !important; /* Dark Green */
 }
 
-/* ✅ Makes room details visually distinct */
-.bg-info {
-  padding: 10px;
-  border-radius: 5px;
-  color: white;
+/* ✅ Reservation Notice Styling */
+.reservation-notice,
+.reservation-placeholder {
+  color: #ffd700; /* Gold */
+  font-size: 14px;
   font-weight: bold;
+  margin-bottom: 8px;
+  height: 20px; /* ✅ Ensures consistent height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* ✅ Adds spacing for rows */
-.row {
-  margin-bottom: 10px;
+/* ✅ Placeholder for consistent height even when notice is missing */
+.reservation-placeholder {
+  color: #f8f9fa;
 }
 
-/* ✅ Modal Styling */
+/* ✅ Room Hotel Name & Location */
+.room-hotel {
+  /* display: flex;
+  justify-content: space-between; */
+  font-size: 18px;
+  font-weight: bold;
+  color: #f8f9fa;
+}
+
+.room-info {
+  text-align: left;
+}
+
+/* ✅ Buttons Row (Same Width) */
+.room-actions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 15px;
+}
+
+/* ✅ Equal Button Sizes */
+.room-actions a,
+.room-actions button {
+  flex: 1;
+  margin: 0 5px;
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+/* ✅ Rent Room Button */
+.btn-primary {
+  background-color: #8b4513; /* Cocoa Brown */
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #a0522d;
+}
+
+/* ✅ View Reservations Button */
+.btn-warning {
+  background-color: #ffcc00; /* Gold */
+  color: black;
+}
+
+.btn-warning:hover {
+  background-color: #e6b800;
+}
+
+/* ✅ MODAL STYLING (Now Matches Cards) */
 .modal {
   display: none;
   position: fixed;
@@ -42,39 +111,48 @@ button {
   justify-content: center;
 }
 
-/* ✅ Ensures modal is centered and well-styled */
+/* ✅ Styled Modal Box */
 .modal-content {
-  background-color: rgb(221, 124, 44);
+  background-color: #5d4037; /* Dark Brown */
   padding: 20px;
   border-radius: 10px;
   text-align: center;
   width: 350px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  color: #f8f9fa;
 }
 
 /* ✅ Close button */
 .close {
-  float: right;
+  position: absolute;
+  top: 1px;
+  right: 10px;
   font-size: 20px;
   font-weight: bold;
   cursor: pointer;
+  color: #fff;
 }
 
-/* ✅ Styles input fields */
-.form-group {
-  margin: 10px 0;
-  text-align: left;
+/* ✅ Styled Input Fields */
+input[type="date"] {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: none;
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 14px;
 }
 
-/* ✅ Styles the confirm reservation button */
+/* ✅ Styled Confirm Button */
 #confirm-reservation {
-  width: 90%;
+  width: 100%;
   display: block;
-  margin: 15px auto 0; /* Centers the button */
+  margin: 15px auto 0;
   padding: 10px;
   font-size: 16px;
   font-weight: bold;
-  background-color: #363a36;
+  background-color: #8b4513;
   color: white;
   border: none;
   border-radius: 5px;
@@ -82,5 +160,5 @@ button {
 }
 
 #confirm-reservation:hover {
-  background-color: #218838;
+  background-color: #a0522d;
 }

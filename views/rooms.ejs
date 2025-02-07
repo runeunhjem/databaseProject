@@ -1,43 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-  <!-- <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rooms</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="/stylesheets/rooms.css" rel="stylesheet" />
-  </head> -->
   <%- include("partials/head") %>
   <body>
     <%- include("partials/navbar") %>
 
-    <!-- Room Cards & Add “View Hotel” Button -->
-    <div class="container">
-      <h2 class="p-3 text-center text-light">Available Rooms</h2>
-      <div class="row">
+    <div class="container text-center mt-5">
+      <h2 class="text-light">Available Rooms</h2>
+      <div class="room-list">
         <% rooms.forEach(room => { %>
-          <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm bg-dark text-light">
-              <div class="card-header bg-secondary text-white">
-                <h5 class="card-title mb-0"><%= room.hotel_name %></h5> <!-- ✅ Added hotel name -->
-              </div>
-              <div class="card-body">
-                <h6 class="card-subtitle mb-2 text-muted">Room for <%= room.capacity %> people</h6>
-                <p class="card-text">Price: <strong>$<%= room.price %> per night</strong></p>
-                <a href="/hotels/<%= room.hotel_id %>" class="btn btn-outline-light">View Hotel</a>
-                <button class="btn btn-primary rent-room" data-id="<%= room.id %>">Rent</button>
-              </div>
-            </div>
+        <div class="room-card <%= room.is_reserved ? 'reserved-room' : '' %>">
+          <div class="room-info">
+            <div class="room-hotel"><%= room.hotel_name %> in <%= room.hotel_location %></div>
+            <div><strong><%= room.room_type %></strong></div>
+            <div><strong>Capacity: <%= room.max_capacity %></strong></div>
+            <div class="mb-1"><strong>Price: $<%= room.price %> per night</strong></div>
           </div>
+
+          <!-- ✅ Reservation Notice with Placeholder to Ensure Consistency -->
+          <% if (room.is_reserved) { %>
+            <p class="reservation-notice">You already have a reservation here !</p>
+          <% } else { %>
+            <p class="reservation-placeholder">Room is available</p>
+          <% } %>
+
+          <div class="room-actions">
+            <a href="/hotels/<%= room.hotel_id %>" class="btn-secondary">View Hotel</a>
+            <% if (!room.is_reserved) { %>
+              <button class="btn-primary rent-room" data-id="<%= room.id %>">Rent</button>
+            <% } else { %>
+              <a href="/users/1" class="btn-warning">Reservations</a>
+            <% } %>
+          </div>
+        </div>
         <% }); %>
       </div>
     </div>
 
-    <!-- ✅ Reservation Modal (Global, not inside loop) -->
+    <!-- ✅ Reservation Modal -->
     <div id="reservationModal" class="modal">
       <div class="modal-content">
         <span class="close">&times;</span>
-        <h3 class="text-center">Book a Room</h3>
+        <h3 class="text-center mt-3">Book a Room</h3>
         <div class="form-group">
           <label for="start-date">Start Date:</label>
           <input type="date" id="start-date" class="form-control" />
@@ -46,14 +49,11 @@
           <label for="end-date">End Date:</label>
           <input type="date" id="end-date" class="form-control" />
         </div>
-        <button id="confirm-reservation">Confirm Reservation</button>
+        <button id="confirm-reservation" class="btn btn-primary">Confirm Reservation</button>
       </div>
     </div>
 
-    <!-- Include Reservation Script -->
     <script src="/javascripts/makeReservation.js"></script>
-
-    <!-- Include Footer -->
     <%- include("partials/footer") %>
   </body>
 </html>

@@ -5,36 +5,61 @@ class RoomService {
   constructor(db) {
     this.client = db.sequelize;
     this.Room = db.Room;
-    this.Reservation = db.Reservation; // ✅ Ensures Reservations are accessible
+    this.Reservation = db.Reservation;
   }
 
-  // ✅ Get all rooms using raw SQL
-  async get() {
+  // ✅ Get all rooms with hotel info, updated room labels
+  async getAllRooms(userId = 1) {
     try {
-      return await sequelize.query("SELECT * FROM Rooms", { type: QueryTypes.SELECT });
+      return await sequelize.query(
+        `SELECT r.*, h.name AS hotel_name, h.location AS hotel_location, h.id AS hotel_id,
+          CASE
+            WHEN r.capacity = 2 THEN 'Double Room'
+            WHEN r.capacity = 4 THEN 'Family Room'
+            WHEN r.capacity = 5 THEN 'Junior Suite'
+            WHEN r.capacity > 5 THEN 'Suite'
+            ELSE CONCAT('Room for ', r.capacity, ' people')
+          END AS room_type,
+          r.capacity AS max_capacity,
+          CASE
+            WHEN EXISTS (SELECT 1 FROM Reservations WHERE room_id = r.id AND user_id = :userId)
+            THEN 1 ELSE 0
+          END AS is_reserved
+         FROM Rooms r
+         JOIN Hotels h ON r.hotel_id = h.id`,
+        {
+          replacements: { userId },
+          type: QueryTypes.SELECT,
+        }
+      );
     } catch (err) {
       console.error("Error fetching rooms:", err);
       return [];
     }
   }
 
-  // ✅ Get all rooms for a specific hotel, formatted per school guidelines
-  async getHotelRooms(hotelId) {
+  // ✅ Get rooms for a specific hotel
+  async getHotelRooms(hotelId, userId = 1) {
     try {
       return await sequelize.query(
-        `SELECT r.*,
-         CASE
-            WHEN r.capacity = 2 THEN 'Room for 2 people'
-            WHEN r.capacity = 4 THEN 'Room for 4 people'
+        `SELECT r.*, h.name AS hotel_name, h.location AS hotel_location, h.id AS hotel_id,
+          CASE
+            WHEN r.capacity = 2 THEN 'Double Room'
+            WHEN r.capacity = 4 THEN 'Family Room'
+            WHEN r.capacity = 5 THEN 'Junior Suite'
+            WHEN r.capacity > 5 THEN 'Suite'
             ELSE CONCAT('Room for ', r.capacity, ' people')
-         END AS capacityLabel,
-         CASE
-            WHEN EXISTS (SELECT 1 FROM Reservations WHERE room_id = r.id AND user_id = 1)
+          END AS room_type,
+          r.capacity AS max_capacity,
+          CASE
+            WHEN EXISTS (SELECT 1 FROM Reservations WHERE room_id = r.id AND user_id = :userId)
             THEN 1 ELSE 0
-         END AS isReserved
-         FROM Rooms r WHERE r.hotel_id = :hotelId`,
+          END AS is_reserved
+          FROM Rooms r
+          JOIN Hotels h ON r.hotel_id = h.id
+          WHERE r.hotel_id = :hotelId`,
         {
-          replacements: { hotelId },
+          replacements: { hotelId, userId },
           type: QueryTypes.SELECT,
         }
       );
@@ -44,14 +69,14 @@ class RoomService {
     }
   }
 
-  // ✅ Create a room using raw SQL
+  // ✅ Create a room
   async create(capacity, price, hotelId) {
     return await sequelize.query("INSERT INTO Rooms (capacity, price, hotel_id) VALUES (:capacity, :price, :hotelId)", {
       replacements: { capacity, price, hotelId },
     });
   }
 
-  // ✅ Delete a room using raw SQL
+  // ✅ Delete a room
   async deleteRoom(roomId) {
     try {
       return await sequelize.query("DELETE FROM Rooms WHERE id = :roomId", {
@@ -63,7 +88,7 @@ class RoomService {
     }
   }
 
-  // ✅ Rent a specified room using raw SQL
+  // ✅ Rent a room (create reservation)
   async rentARoom(userId, roomId, startDate, endDate) {
     try {
       await sequelize.query(
@@ -75,13 +100,7 @@ class RoomService {
       return { success: true, message: "Reservation created successfully!" };
     } catch (err) {
       console.error("❌ Error renting a room:", err);
-
-      // If the error is from the trigger, send a specific response
-      if (err.original && err.original.sqlMessage.includes("User already has a reservation")) {
-        return { success: false, message: "You already have a reservation for this room at that time." };
-      }
-
-      return { success: false, message: "An unexpected error occurred." };
+      return { success: false, message: "An error occurred during reservation." };
     }
   }
 }

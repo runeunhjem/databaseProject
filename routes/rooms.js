@@ -10,7 +10,7 @@ const roomService = new RoomService(db);
 // ✅ GET all rooms
 router.get("/", async function (req, res, next) {
   try {
-    const rooms = await roomService.get();
+    const rooms = await roomService.getAllRooms();
     res.render("rooms", { title: "Rooms", cssFile: "rooms", rooms });
   } catch (error) {
     res.status(500).send("Error fetching rooms.");
@@ -26,7 +26,6 @@ router.get("/:hotelId", async function (req, res, next) {
     res.status(500).send("Error fetching rooms.");
   }
 });
-
 
 // ✅ POST create a new room
 router.post("/", jsonParser, async function (req, res, next) {
@@ -51,8 +50,6 @@ router.post("/reservation", jsonParser, async function (req, res, next) {
   let startDate = req.body.startDate;
   let endDate = req.body.endDate;
 
-  console.log("Received reservation request:", { userId, roomId, startDate, endDate });
-
   const result = await roomService.rentARoom(userId, roomId, startDate, endDate);
 
   if (result.success) {
@@ -61,7 +58,5 @@ router.post("/reservation", jsonParser, async function (req, res, next) {
     res.status(400).json({ success: false, message: result.message });
   }
 });
-
-
 
 module.exports = router;
