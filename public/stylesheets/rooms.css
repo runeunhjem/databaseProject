@@ -45,11 +45,10 @@
 
 /* ✅ Room Hotel Name & Location */
 .room-hotel {
-  /* display: flex;
-  justify-content: space-between; */
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
-  color: #f8f9fa;
+  font-style: italic;
+  color: #b6939a;
 }
 
 .room-info {
