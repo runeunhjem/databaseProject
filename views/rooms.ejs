@@ -1,25 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+  <!-- <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rooms</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="/stylesheets/rooms.css" rel="stylesheet" />
-  </head>
+  </head> -->
+  <%- include("partials/head") %>
   <body>
+    <%- include("partials/navbar") %>
+
+    <!-- Room Cards & Add “View Hotel” Button -->
     <div class="container">
-      <h2 class="p-3 text-center">Choose a Room</h2>
-      <div class="list-group">
-        <% rooms.forEach(function(room) { %>
-        <div class="row px-3 py-2 w-100 align-items-center <%= room.isReserved ? 'bg-warning' : '' %>">
-          <span class="col py-2 bg-info text-white rounded">
-            Room for <%= room.capacity %> people
-            <span class="float-end">Daily cost: <%= room.price %></span>
-          </span>
-          <!-- Rent a Room Button -->
-          <button class="col-auto btn btn-primary mx-1 rent-room" data-id="<%= room.id %>">Rent</button>
-        </div>
+      <h2 class="p-3 text-center text-light">Available Rooms</h2>
+      <div class="row">
+        <% rooms.forEach(room => { %>
+          <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm bg-dark text-light">
+              <div class="card-header bg-secondary text-white">
+                <h5 class="card-title mb-0"><%= room.hotel_name %></h5> <!-- ✅ Added hotel name -->
+              </div>
+              <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Room for <%= room.capacity %> people</h6>
+                <p class="card-text">Price: <strong>$<%= room.price %> per night</strong></p>
+                <a href="/hotels/<%= room.hotel_id %>" class="btn btn-outline-light">View Hotel</a>
+                <button class="btn btn-primary rent-room" data-id="<%= room.id %>">Rent</button>
+              </div>
+            </div>
+          </div>
         <% }); %>
       </div>
     </div>
@@ -43,5 +52,8 @@
 
     <!-- Include Reservation Script -->
     <script src="/javascripts/makeReservation.js"></script>
+
+    <!-- Include Footer -->
+    <%- include("partials/footer") %>
   </body>
 </html>

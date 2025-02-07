@@ -1,11 +1,47 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+<html lang="en">
+  <%- include("partials/head") %>
+  <body class="d-flex flex-column min-vh-100">
+    <%- include("partials/navbar") %>
+
+    <div class="container text-center mt-5">
+      <h1 class="text-light">Welcome to Hotel Booking</h1>
+      <p class="lead text-light">
+        <strong>Your perfect stay is just a click away.</strong>
+        <p>Browse through luxurious and affordable hotels worldwide.</p>
+      </p>
+      <a href="/hotels" class="btn btn-primary btn-lg mt-3">Browse Hotels</a>
+    </div>
+
+    <!-- ✅ Refined Image Gallery -->
+    <!-- ✅ Refined Image Gallery -->
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-4">
+          <img
+            src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?q=80"
+            class="img-fluid rounded shadow-lg gallery"
+            alt="Luxury Hotels"
+            title="Luxury Hotels" />
+        </div>
+        <div class="col-md-4">
+          <img
+            src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80"
+            class="img-fluid rounded shadow-lg gallery"
+            alt="Hotel Rooms"
+            title="Hotel Rooms" />
+        </div>
+        <div class="col-md-4">
+          <img
+            src="https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80"
+            class="img-fluid rounded shadow-lg gallery"
+            alt="Beach Resorts"
+            title="Beach Resorts" />
+        </div>
+      </div>
+    </div>
+
+    <%- include("partials/footer") %>
   </body>
 </html>
+

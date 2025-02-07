@@ -11,7 +11,7 @@ const hotelService = new HotelService(db);
 router.get("/", async function (req, res, next) {
   try {
     const hotels = await hotelService.get();
-    res.render("hotels", { title: "Hotels", hotels });
+    res.render("hotels", { title: "Hotels", cssFile: "hotels", hotels });
   } catch (error) {
     res.status(500).send("Error fetching hotels.");
   }
@@ -21,14 +21,17 @@ router.get("/", async function (req, res, next) {
 router.get("/:hotelId", async function (req, res, next) {
   try {
     const hotel = await hotelService.getHotelDetails(req.params.hotelId);
+
     if (!hotel) {
       return res.status(404).send("Hotel not found");
     }
-    res.render("hotelDetails", { hotel });
+
+    res.render("hotelDetails", { title: hotel.name, cssFile: "hotelDetails", hotel });
   } catch (error) {
     res.status(500).send("Error fetching hotel details.");
   }
 });
+
 
 // ✅ POST create a new hotel
 router.post("/", jsonParser, async function (req, res, next) {

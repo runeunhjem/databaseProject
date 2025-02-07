@@ -9,15 +9,24 @@ const roomService = new RoomService(db);
 
 // ✅ GET all rooms
 router.get("/", async function (req, res, next) {
-  const rooms = await roomService.get();
-  res.render("rooms", { rooms });
+  try {
+    const rooms = await roomService.get();
+    res.render("rooms", { title: "Rooms", cssFile: "rooms", rooms });
+  } catch (error) {
+    res.status(500).send("Error fetching rooms.");
+  }
 });
 
 // ✅ GET rooms for a specific hotel
 router.get("/:hotelId", async function (req, res, next) {
-  const rooms = await roomService.getHotelRooms(req.params.hotelId);
-  res.render("rooms", { rooms });
+  try {
+    const rooms = await roomService.getHotelRooms(req.params.hotelId);
+    res.render("rooms", { title: "Rooms", cssFile: "rooms", rooms });
+  } catch (error) {
+    res.status(500).send("Error fetching rooms.");
+  }
 });
+
 
 // ✅ POST create a new room
 router.post("/", jsonParser, async function (req, res, next) {

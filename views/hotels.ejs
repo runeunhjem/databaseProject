@@ -1,34 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hotels</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="/stylesheets/hotels.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="container">
-      <h2 class="p-3 text-center">Choose a Hotel</h2>
-      <div class="list-group">
+  <%- include("partials/head") %>
+  <body class="d-flex flex-column min-vh-100">
+    <%- include("partials/navbar") %>
+
+    <div class="container text-center mt-5 main">
+      <h1 class="page-title">Choose a Hotel</h1>
+
+      <div class="hotel-list">
         <% hotels.forEach(function(hotel) { %>
-        <div class="row px-3 py-2 w-100 align-items-center">
-          <span class="col py-2 bg-info text-white rounded">
-            <%= hotel.name %>
-            <span class="float-end"><%= hotel.location %></span>
-          </span>
-          <a href="/rooms/<%= hotel.id %>" class="col-auto btn btn-secondary mx-1">Rent a Room</a>
-          <a href="/hotels/<%= hotel.id %>" class="col-auto btn btn-secondary mx-1">Details</a>
-          <button class="col-auto btn btn-danger delete-hotel" data-id="<%= hotel.id %>">Delete</button>
-        </div>
+          <div class="hotel-card">
+            <div class="hotel-info">
+              <span class="hotel-name"><%= hotel.name %></span>
+              <span class="hotel-location"><%= hotel.location %></span>
+            </div>
+            <div class="hotel-actions">
+              <a href="/rooms/<%= hotel.id %>" class="btn-primary">Rent a Room</a>
+              <a href="/hotels/<%= hotel.id %>" class="btn-secondary">Details</a>
+              <button class="btn-danger delete-hotel" data-id="<%= hotel.id %>">Delete</button>
+            </div>
+          </div>
         <% }); %>
       </div>
-      <!-- Add New Hotel Button -->
-      <button id="add-hotel" class="right btn btn-primary m-4">+ New Hotel</button>
+
+      <!-- ✅ Add Hotel Button is now BELOW the hotel list -->
+      <div class="add-hotel-container">
+        <button id="add-hotel" class="btn-primary add-hotel-btn">+ New Hotel</button>
+      </div>
     </div>
 
     <!-- Include Scripts -->
     <script src="/javascripts/addHotel.js"></script>
     <script src="/javascripts/deleteHotel.js"></script>
+
+    <%- include("partials/footer") %>
   </body>
 </html>

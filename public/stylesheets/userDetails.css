@@ -1,0 +1,19 @@
+th {
+  white-space: nowrap;
+
+}
+td {
+  background-color: #7a3c13 !important; /* Dark cocoa */
+  color: #f8f9fa; /* Light text */
+  white-space: nowrap;
+
+}
+strong {
+  display: flex;
+  height: 100%;
+
+}
+
+tr {
+  align-items: center;
+}
