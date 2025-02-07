@@ -1,5 +1,6 @@
 /* ✅ Ensures the footer stays at the bottom */
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -41,30 +42,36 @@ body {
 }
 
 .btn-primary {
-  background-color: #8b4513; /* Cocoa Brown */
+  background-color: #8b4513 !important; /* Cocoa Brown */
+  color: #f8f9fa;
   border: none;
 }
 
 .btn-primary:hover {
-  background-color: #a0522d;
+  background-color: #a0522d !important;
+  color: #f8f9fa;
 }
 
 .btn-secondary {
-  background-color: #555;
+  background-color: #555 !important;
+  color: #f8f9fa;
   border: none;
 }
 
 .btn-secondary:hover {
-  background-color: #777;
+  background-color: #777 !important;
+  color: #f8f9fa;
 }
 
 .btn-danger {
-  background-color: #dc143c;
+  background-color: #dc143c !important;
+  color: #f8f9fa;
   border: none;
 }
 
 .btn-danger:hover {
-  background-color: #a3001e;
+  background-color: #a3001e !important;
+  color: #f8f9fa;
 }
 
 /* ✅ Improves Image Gallery */
@@ -99,3 +106,4 @@ body {
   color: #f8f9fa;
   text-decoration: none;
 }
+
