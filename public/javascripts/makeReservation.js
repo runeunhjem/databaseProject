@@ -27,15 +27,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Function to format date with current time
+  function formatDateWithTime(dateValue) {
+    const now = new Date();
+    const selectedDate = new Date(dateValue);
+
+    // Set selected date to the current time
+    selectedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+
+    return selectedDate.toISOString().slice(0, 19).replace("T", " "); // Format as 'YYYY-MM-DD HH:MM:SS'
+  }
+
   // Confirm reservation
   confirmButton.addEventListener("click", async () => {
-    const startDate = document.getElementById("start-date").value;
-    const endDate = document.getElementById("end-date").value;
+    const startDateInput = document.getElementById("start-date").value;
+    const endDateInput = document.getElementById("end-date").value;
 
-    if (!startDate || !endDate) {
+    if (!startDateInput || !endDateInput) {
       alert("❌ Please select both start and end dates.");
       return;
     }
+
+    const startDate = formatDateWithTime(startDateInput);
+    const endDate = formatDateWithTime(endDateInput);
 
     try {
       const response = await fetch("/rooms/reservation", {
@@ -44,25 +58,22 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({
           userId: 1, // Static user ID
           roomId: selectedRoomId,
-          startDate: startDate,
-          endDate: endDate,
+          startDate,
+          endDate,
         }),
       });
 
-      const data = await response.json(); // Convert response to JSON
+      const data = await response.json();
 
       if (response.ok) {
         alert("✅ Reservation successful!");
         window.location.reload();
       } else {
-        alert("❌ " + data.message); // Show error message from the backend
+        alert("❌ " + data.message);
       }
     } catch (error) {
       console.error("❌ Error:", error);
       alert("❌ Something went wrong.");
     }
-
-    // ❌ REMOVE THIS: modal.style.display = "none"; ❌
-    // Modal will only close if reservation is successful.
   });
 });
