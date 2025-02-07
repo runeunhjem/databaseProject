@@ -1,0 +1,15 @@
+.container {
+  margin-top: 40px;
+}
+
+h2,
+h3,
+h4 {
+  margin-bottom: 15px;
+}
+
+.rate-hotel {
+  margin-top: 10px;
+  font-size: 18px;
+  padding: 10px 20px;
+}
