@@ -71,9 +71,15 @@ class RoomService {
 
   // ✅ Create a room
   async create(capacity, price, hotelId) {
-    return await sequelize.query("INSERT INTO Rooms (capacity, price, hotel_id) VALUES (:capacity, :price, :hotelId)", {
-      replacements: { capacity, price, hotelId },
-    });
+    try {
+      return await sequelize.query("INSERT INTO Rooms (capacity, price, hotel_id) VALUES (:capacity, :price, :hotelId)", {
+        replacements: { capacity, price, hotelId },
+        type: QueryTypes.INSERT,
+      });
+    } catch (err) {
+      console.error("❌ Error adding room:", err);
+      throw err;
+    }
   }
 
   // ✅ Delete a room

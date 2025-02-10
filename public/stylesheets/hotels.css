@@ -42,6 +42,7 @@
 /* ✅ Buttons Row (Same Width) */
 .hotel-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   width: 100%;
   padding: 10px 20px;
@@ -51,7 +52,7 @@
 .hotel-actions a,
 .hotel-actions button {
   flex: 1;
-  margin: 0 5px;
+  margin: 5px 5px;
   text-align: center;
   padding: 10px;
   border-radius: 8px;

@@ -5,49 +5,52 @@
     <%- include("partials/navbar") %>
 
     <div class="container text-center mt-5">
-      <h1 class="hotel-title"><%= hotel.name %></h1>
-      <p class="hotel-location"><strong>Location:</strong> <%= hotel.location %></p>
+      <h1 class="page-title"><%= hotel.name %></h1>
+      <p class="hotel-location">Location: <strong><%= hotel.location %></strong></p>
 
-      <h2 class="mt-4">Rating:</h2>
-      <% if (hotel.avgRating === "No ratings yet") { %>
-        <p class="text-white">No ratings yet</p>
-      <% } else { %>
-        <p class="text-warning"><%= hotel.avgRating %> ⭐</p>
-      <% } %>
-
+      <h2 class="rating">Rating: <%= hotel.avgRating %></h2>
       <% if (!hotel.rated) { %>
         <button onclick="makeRate(1, '/hotels/<%= hotel.id %>/rate')" class="btn btn-success">Rate this hotel</button>
       <% } %>
 
-      <h3 class="mt-5">Available Rooms</h3>
-      <div class="room-list">
-        <% if (hotel.Rooms && hotel.Rooms.length > 0) { %>
-          <% hotel.Rooms.forEach(room => { %>
-            <div class="room-card <%= room.is_reserved ? 'reserved-room' : '' %>">
-              <div class="room-info">
-                <h4><strong><%= room.room_type %></strong></h4>
-                <p>Capacity: <strong><%= room.max_capacity %></strong></p>
-                <p>Price: <strong>$<%= room.price %> per night</strong></p>
-              </div>
+      <!-- ✅ New Wrapper for Rooms & Button -->
+      <div class="room-wrapper">
+        <h3 class="mt-4">Available Rooms</h3>
 
-              <% if (room.is_reserved) { %>
-                <p class="reservation-notice">You already have a reservation here!</p>
-              <% } else { %>
-                <p class="reservation-placeholder">Room is available</p>
-              <% } %>
+        <div class="room-list">
+          <% if (hotel.Rooms && hotel.Rooms.length > 0) { %>
+            <% hotel.Rooms.forEach(room => { %>
+              <div class="room-card <%= room.is_reserved ? 'reserved-room' : '' %>">
+                <div class="room-info">
+                  <h4><%= room.room_type %></h4>
+                  <p>Capacity: <strong><%= room.max_capacity %></strong></p>
+                  <p>Price: <strong>$<%= room.price %> per night</strong></p>
+                </div>
 
-              <div class="room-actions">
-                <% if (!room.is_reserved) { %>
-                  <button class="btn-primary rent-room" data-id="<%= room.id %>">Book Now</button>
+                <% if (room.is_reserved) { %>
+                  <p class="reservation-notice">✔️ You already have a reservation here</p>
                 <% } else { %>
-                  <a href="/users/1" class="btn-warning">Reservations</a>
+                  <p class="reservation-placeholder">Room is available</p>
                 <% } %>
+
+                <div class="room-actions">
+                  <% if (!room.is_reserved) { %>
+                    <button class="btn-primary rent-room" data-id="<%= room.id %>">Rent</button>
+                  <% } else { %>
+                    <a href="/users/1" class="btn-warning">Reservations</a>
+                  <% } %>
+                </div>
               </div>
-            </div>
-          <% }) %>
-        <% } else { %>
-          <p class="text-danger">No rooms available in this hotel.</p>
-        <% } %>
+            <% }); %>
+          <% } else { %>
+            <p class="text-danger">No rooms available in this hotel.</p>
+          <% } %>
+        </div>
+
+        <!-- ✅ Add Room Button (Now correctly below all room cards) -->
+        <div class="add-room-container">
+          <button id="add-room" class="btn-primary add-room-btn">+ Add Room</button>
+        </div>
       </div>
     </div>
 
@@ -57,11 +60,11 @@
         <span class="close">&times;</span>
         <h3 class="text-center mt-3">Book a Room</h3>
         <div class="form-group">
-          <label for="start-date" class="mb-2">Start Date:</label>
+          <label for="start-date">Start Date:</label>
           <input type="date" id="start-date" class="form-control" />
         </div>
         <div class="form-group">
-          <label for="end-date" class="mb-2">End Date:</label>
+          <label for="end-date">End Date:</label>
           <input type="date" id="end-date" class="form-control" />
         </div>
         <button id="confirm-reservation" class="btn btn-primary">Confirm Reservation</button>
@@ -69,7 +72,9 @@
     </div>
 
     <script src="/javascripts/makeReservation.js"></script>
+    <script src="/javascripts/addRoom.js"></script>
     <script src="/javascripts/makeRate.js"></script>
+
     <%- include("partials/footer") %>
   </body>
 </html>

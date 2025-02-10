@@ -27,13 +27,21 @@ router.get("/:hotelId", async function (req, res, next) {
   }
 });
 
-// ✅ POST create a new room
-router.post("/", jsonParser, async function (req, res, next) {
-  let capacity = req.body.capacity;
-  let pricePerDay = req.body.pricePerDay;
-  let hotelId = req.body.hotelId;
-  await roomService.create(capacity, pricePerDay, hotelId);
-  res.end();
+// ✅ POST create a new room (Fixed route)
+router.post("/add", jsonParser, async function (req, res, next) {
+  try {
+    const { capacity, price, hotelId } = req.body;
+
+    if (!capacity || !price || !hotelId) {
+      return res.status(400).json({ message: "❌ Capacity, price, and hotelId are required!" });
+    }
+
+    await roomService.create(capacity, price, hotelId);
+    res.status(201).json({ message: "✅ Room added successfully!" });
+  } catch (error) {
+    console.error("❌ Error adding room:", error);
+    res.status(500).json({ message: "❌ Internal server error." });
+  }
 });
 
 // ✅ DELETE remove a room

@@ -49,7 +49,6 @@ class HotelService {
   // ✅ Get hotel details with rooms
   async getHotelDetails(hotelId, userId) {
     try {
-      // Retrieve hotel data with correct rating calculation
       const hotel = await sequelize.query(
         `SELECT h.id, h.name, h.location,
         IFNULL(ROUND(AVG(r.rating), 1), 'No ratings yet') AS avgRating
@@ -65,13 +64,13 @@ class HotelService {
 
       if (!hotel[0]) return null;
 
-      // Fetch rooms & check if user has reserved a room
       const rooms = await sequelize.query(
         `SELECT ro.id, ro.capacity AS max_capacity, ro.price,
         CASE
           WHEN ro.capacity = 2 THEN 'Double Room'
           WHEN ro.capacity = 4 THEN 'Family Room'
-          WHEN ro.capacity > 4 THEN 'Suite'
+          WHEN ro.capacity = 5 THEN 'Junior Suite'
+          WHEN ro.capacity > 5 THEN 'Suite'
           ELSE CONCAT('Room for ', ro.capacity, ' people')
         END AS room_type,
         (SELECT COUNT(*) FROM Reservations r WHERE r.room_id = ro.id AND r.user_id = :userId) > 0 AS is_reserved
@@ -83,7 +82,6 @@ class HotelService {
         }
       );
 
-      // Check if the logged-in user has already rated this hotel
       const userRateCount = await sequelize.query(
         `SELECT COUNT(*) as rated FROM Ratings
         WHERE hotel_id = :hotelId AND user_id = :userId`,
@@ -93,10 +91,9 @@ class HotelService {
         }
       );
 
-      // ✅ Assign correct rating and check if user has rated
       hotel[0].rated = userRateCount[0].rated > 0;
       hotel[0].avgRating = hotel[0].avgRating === "No ratings yet" ? "No ratings yet" : parseFloat(hotel[0].avgRating);
-      hotel[0].Rooms = rooms; // Attach rooms with reservation status
+      hotel[0].Rooms = rooms;
 
       return hotel[0];
     } catch (err) {
@@ -117,6 +114,18 @@ class HotelService {
       );
     } catch (err) {
       console.error("Error rating hotel:", err);
+      return err;
+    }
+  }
+
+  // ✅ Add Room to a Hotel (INSIDE CLASS NOW!)
+  async addRoom(hotelId, capacity, price) {
+    try {
+      return await sequelize.query("INSERT INTO Rooms (hotel_id, capacity, price) VALUES (:hotelId, :capacity, :price)", {
+        replacements: { hotelId, capacity, price },
+      });
+    } catch (err) {
+      console.error("Error adding room:", err);
       return err;
     }
   }

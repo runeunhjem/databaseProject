@@ -1,22 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("✅ makeReservation.js loaded");
 
+  let modal;
+  const waitForModal = setInterval(() => {
+    modal = document.getElementById("reservationModal");
+    if (modal) {
+      clearInterval(waitForModal);
+      setupReservationModal(modal);
+    }
+  }, 100); // Check every 100ms until modal exists
+});
+
+function setupReservationModal(modal) {
   const rentButtons = document.querySelectorAll(".rent-room");
-  const modal = document.getElementById("reservationModal");
-  const closeModal = document.querySelector(".close");
+  const closeModal = modal.querySelector(".close");
   const confirmButton = document.getElementById("confirm-reservation");
   const startDateInput = document.getElementById("start-date");
   const endDateInput = document.getElementById("end-date");
 
   let selectedRoomId = null;
 
-  // ✅ Ensure modal exists before interacting with it
-  if (!modal) {
-    console.error("❌ Modal not found in DOM!");
-    return;
-  }
-
-  // ✅ Hide modal on page load (prevents auto-opening)
+  // ✅ Hide modal initially
   modal.style.display = "none";
 
   // ✅ Open modal when "Rent a Room" is clicked
@@ -43,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ✅ Close modal when clicking outside of it
+  // ✅ Close modal when clicking outside
   window.addEventListener("click", (event) => {
     if (event.target === modal) {
       console.log("🔴 Closing modal (outside click)");
@@ -51,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ✅ Ensure confirm button exists before adding event listener
+  // ✅ Ensure confirm button exists
   if (!confirmButton) {
     console.error("❌ Confirm reservation button not found!");
     return;
@@ -60,13 +64,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ Function to format date with current time
   function formatDateWithTime(dateValue) {
     if (!dateValue) return null;
-
     const now = new Date();
     const selectedDate = new Date(dateValue);
-
-    // ✅ Set selected date to current time for precision
     selectedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
-
     return selectedDate.toISOString().slice(0, 19).replace("T", " ");
   }
 
@@ -118,4 +118,4 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("❌ Something went wrong.");
     }
   });
-});
+}
