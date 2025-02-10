@@ -38,7 +38,8 @@ class UserService {
             CASE
               WHEN ro.capacity = 2 THEN 'Double Room'
               WHEN ro.capacity = 4 THEN 'Family Room'
-              WHEN ro.capacity > 4 THEN 'Suite'
+              WHEN ro.capacity = 5 THEN 'Junior Suite'
+              WHEN ro.capacity > 5 THEN 'Suite'
               ELSE CONCAT('Room for ', ro.capacity, ' people')
             END AS room_type,
             DATE_FORMAT(r.start_date, '%Y-%m-%d %H:%i') AS rentFrom,

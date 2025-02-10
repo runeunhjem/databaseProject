@@ -20,7 +20,8 @@ router.get("/", async function (req, res, next) {
 // ✅ GET hotel details
 router.get("/:hotelId", async function (req, res, next) {
   try {
-    const hotel = await hotelService.getHotelDetails(req.params.hotelId);
+    const userId = 1; // Static user ID (Replace with actual logged-in user ID if needed)
+    const hotel = await hotelService.getHotelDetails(req.params.hotelId, userId);
 
     if (!hotel) {
       return res.status(404).send("Hotel not found");
@@ -31,6 +32,7 @@ router.get("/:hotelId", async function (req, res, next) {
     res.status(500).send("Error fetching hotel details.");
   }
 });
+
 
 
 // ✅ POST create a new hotel with room types

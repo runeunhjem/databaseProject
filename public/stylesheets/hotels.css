@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 40%;
+  width: 60%;
 }
 
 /* ✅ Hotel List Styling */
@@ -58,6 +58,7 @@
   font-size: 14px;
   text-decoration: none;
   align-self: center;
+  white-space: nowrap;
 }
 
 /* ✅ Add Hotel Button is now centered BELOW the cards */

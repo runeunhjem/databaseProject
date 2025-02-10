@@ -7,6 +7,7 @@ class HotelService {
     this.Hotel = db.Hotel;
     this.Rating = db.Rating;
     this.User = db.User;
+    this.Room = db.Room;
   }
 
   // ✅ Create a hotel using raw SQL
@@ -45,17 +46,17 @@ class HotelService {
     }
   }
 
-  // ✅ Get hotel details using raw SQL (Including Average Rating)
-  async getHotelDetails(hotelId) {
+  // ✅ Get hotel details with rooms
+  async getHotelDetails(hotelId, userId) {
     try {
       // Retrieve hotel data with correct rating calculation
       const hotel = await sequelize.query(
         `SELECT h.id, h.name, h.location,
-          IFNULL(ROUND(AVG(r.rating), 1), 'No ratings yet') AS avgRating
-          FROM Hotels h
-          LEFT JOIN Ratings r ON h.id = r.hotel_id
-          WHERE h.id = :hotelId
-          GROUP BY h.id`,
+        IFNULL(ROUND(AVG(r.rating), 1), 'No ratings yet') AS avgRating
+        FROM Hotels h
+        LEFT JOIN Ratings r ON h.id = r.hotel_id
+        WHERE h.id = :hotelId
+        GROUP BY h.id`,
         {
           replacements: { hotelId },
           type: QueryTypes.SELECT,
@@ -64,12 +65,30 @@ class HotelService {
 
       if (!hotel[0]) return null;
 
+      // Fetch rooms & check if user has reserved a room
+      const rooms = await sequelize.query(
+        `SELECT ro.id, ro.capacity AS max_capacity, ro.price,
+        CASE
+          WHEN ro.capacity = 2 THEN 'Double Room'
+          WHEN ro.capacity = 4 THEN 'Family Room'
+          WHEN ro.capacity > 4 THEN 'Suite'
+          ELSE CONCAT('Room for ', ro.capacity, ' people')
+        END AS room_type,
+        (SELECT COUNT(*) FROM Reservations r WHERE r.room_id = ro.id AND r.user_id = :userId) > 0 AS is_reserved
+        FROM Rooms ro
+        WHERE ro.hotel_id = :hotelId`,
+        {
+          replacements: { hotelId, userId },
+          type: QueryTypes.SELECT,
+        }
+      );
+
       // Check if the logged-in user has already rated this hotel
       const userRateCount = await sequelize.query(
         `SELECT COUNT(*) as rated FROM Ratings
-          WHERE hotel_id = :hotelId AND user_id = :userId`,
+        WHERE hotel_id = :hotelId AND user_id = :userId`,
         {
-          replacements: { hotelId, userId: 1 },
+          replacements: { hotelId, userId },
           type: QueryTypes.SELECT,
         }
       );
@@ -77,6 +96,7 @@ class HotelService {
       // ✅ Assign correct rating and check if user has rated
       hotel[0].rated = userRateCount[0].rated > 0;
       hotel[0].avgRating = hotel[0].avgRating === "No ratings yet" ? "No ratings yet" : parseFloat(hotel[0].avgRating);
+      hotel[0].Rooms = rooms; // Attach rooms with reservation status
 
       return hotel[0];
     } catch (err) {

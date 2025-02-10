@@ -1,36 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const rateButton = document.querySelector(".rate-hotel");
-
-  if (rateButton) {
-    rateButton.addEventListener("click", async () => {
-      const hotelId = rateButton.getAttribute("data-id");
-      let value = prompt("Rate the hotel from 1 to 5");
-
-      value = parseInt(value, 10);
-      if (!value || value < 1 || value > 5) {
-        alert("❌ Please enter a valid rating between 1 and 5.");
+  window.makeRate = async function (userId, endpoint) {
+    try {
+      const rating = prompt("Enter your rating (1-5):");
+      if (!rating || isNaN(rating) || rating < 1 || rating > 5) {
+        alert("❌ Please enter a number between 1 and 5.");
         return;
       }
 
-      try {
-        const response = await fetch(`/hotels/${hotelId}/rate`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ value }),
-        });
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: rating }),
+      });
 
-        const data = await response.json();
-
-        if (response.ok) {
-          alert("✅ " + data.message);
-          window.location.reload();
-        } else {
-          alert("❌ " + data.message);
-        }
-      } catch (error) {
-        console.error("❌ Error:", error);
-        alert("❌ Something went wrong.");
+      if (!response.ok) {
+        throw new Error(await response.text());
       }
-    });
-  }
+
+      alert("✅ Thank you for your rating!");
+      window.location.reload();
+    } catch (error) {
+      console.error("❌ Error submitting rating:", error);
+      alert("❌ Something went wrong. Please try again.");
+    }
+  };
 });
