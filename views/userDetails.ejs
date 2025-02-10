@@ -1,52 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-  <!-- <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User Details</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-  </head> -->
   <%- include("partials/head") %>
-  <body>
+  <body class="d-flex flex-column min-vh-100">
     <%- include("partials/navbar") %>
 
-    <div class="container">
-      <h2 class="text-center text-primary"><i><%= user.firstName %> <%= user.lastName %></i></h2>
-      <h3 class="p-3">My Reservations:</h3>
+    <div class="container text-center mt-5">
+      <h2 class="page-title"><%= user.firstName %> <%= user.lastName %></h2>
+      <h3 class="sub-title">My Reservations</h3>
 
       <% if (user.reservations.length > 0) { %>
-      <table class="table table-hover table-bordered">
-        <thead class="table-dark">
-          <!-- ✅ Consistent dark theme -->
-          <tr>
-            <th>Hotel Name</th>
-            <th>Hotel Location</th>
-            <th>Room Capacity</th>
-            <th>Price per Day</th>
-            <th>Rent From</th>
-            <th>Rent To</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% user.reservations.forEach(reservation => { %>
-          <tr>
-            <td><%= reservation.hotelName %></td>
-            <td><%= reservation.hotelLocation %></td>
-            <td><%= reservation.capacity %></td>
-            <td><strong>$<%= reservation.price %></strong></td>
-            <td><%= new Date(reservation.rentFrom).toLocaleDateString() %></td>
-            <td><%= new Date(reservation.rentTo).toLocaleDateString() %></td>
-            <td>
-              <button class="btn btn-danger delete-reservation" data-id="<%= reservation.id %>">Cancel</button>
-            </td>
-          </tr>
-          <% }); %>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table reservation-table">
+          <thead>
+            <tr>
+              <th>Hotel Name</th>
+              <th>Location</th>
+              <th>Room Type</th>
+              <th>Capacity</th>
+              <th>Price</th>
+              <th>Check-in</th>
+              <th>Check-out</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% user.reservations.forEach(reservation => { %>
+            <tr>
+              <td><%= reservation.hotelName %></td>
+              <td><%= reservation.hotelLocation %></td>
+              <td><%= reservation.room_type %></td>
+              <td><%= reservation.max_capacity %></td>
+              <td><strong>$<%= reservation.price %></strong></td>
+              <td><%= new Date(reservation.rentFrom).toLocaleDateString() %></td>
+              <td><%= new Date(reservation.rentTo).toLocaleDateString() %></td>
+              <td>
+                <button class="btn btn-danger delete-reservation" data-id="<%= reservation.reservation_id %>">Cancel</button>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
       <% } else { %>
-      <p class="text-center text-muted">No reservations found.</p>
+      <p class="text-muted">No reservations found.</p>
       <% } %>
     </div>
+
+    <%- include("partials/footer") %>
+
+    <script src="/javascripts/deleteReservation.js"></script>
   </body>
 </html>

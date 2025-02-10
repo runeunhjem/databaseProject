@@ -1,19 +1,60 @@
-th {
-  white-space: nowrap;
-
-}
-td {
-  background-color: #7a3c13 !important; /* Dark cocoa */
-  color: #f8f9fa; /* Light text */
-  white-space: nowrap;
-
-}
-strong {
-  display: flex;
-  height: 100%;
-
+/* ✅ General Page Styling */
+.page-title {
+  font-size: 28px;
+  color: #f8f9fa;
+  font-weight: bold;
 }
 
-tr {
-  align-items: center;
+.sub-title {
+  color: #f8f9fa;
+  margin-top: 20px;
+}
+
+/* ✅ Table Styling */
+.reservation-table {
+  width: 100%;
+  margin-top: 20px;
+  background-color: #5d4037; /* Dark Brown */
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.reservation-table th {
+  background-color: #3e2723; /* Darker Cocoa */
+  color: #f8f9fa;
+  padding: 10px;
+  text-align: center;
+}
+
+.reservation-table td {
+  background-color: #7a3c13; /* Cocoa */
+  color: #f8f9fa;
+  padding: 12px;
+  text-align: center;
+}
+
+.reservation-table td strong {
+  color: #ffcc00; /* Gold */
+}
+
+/* ✅ Button Styling */
+.btn-danger {
+  background-color: #dc143c;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #a3001e;
+}
+
+/* ✅ Responsive Table */
+@media (max-width: 768px) {
+  .reservation-table {
+    font-size: 14px;
+  }
+
+  .reservation-table th,
+  .reservation-table td {
+    padding: 8px;
+  }
 }

@@ -10,7 +10,7 @@ class UserService {
     this.Reservation = db.Reservation;
   }
 
-  // ✅ Get user details along with reservations
+  // ✅ Get user details along with reservations, including `reservation_id`, `room_type`, and `max_capacity`
   async getOne(userId) {
     try {
       // Fetch user details
@@ -26,19 +26,27 @@ class UserService {
 
       if (!user.length) return null; // Handle missing user
 
-      // ✅ Fetch reservations with correct date format
+      // ✅ Fetch reservations with correct date format and missing fields
       const reservations = await sequelize.query(
         `SELECT
+            r.id AS reservation_id,
             h.name AS hotelName,
             h.location AS hotelLocation,
-            ro.capacity,
+            ro.id AS room_id,
+            ro.capacity AS max_capacity,
             ro.price,
+            CASE
+              WHEN ro.capacity = 2 THEN 'Double Room'
+              WHEN ro.capacity = 4 THEN 'Family Room'
+              WHEN ro.capacity > 4 THEN 'Suite'
+              ELSE CONCAT('Room for ', ro.capacity, ' people')
+            END AS room_type,
             DATE_FORMAT(r.start_date, '%Y-%m-%d %H:%i') AS rentFrom,
             DATE_FORMAT(r.end_date, '%Y-%m-%d %H:%i') AS rentTo
-            FROM Reservations r
-            JOIN Rooms ro ON r.room_id = ro.id
-            JOIN Hotels h ON ro.hotel_id = h.id
-            WHERE r.user_id = :userId`,
+          FROM Reservations r
+          JOIN Rooms ro ON r.room_id = ro.id
+          JOIN Hotels h ON ro.hotel_id = h.id
+          WHERE r.user_id = :userId`,
         {
           replacements: { userId },
           type: QueryTypes.SELECT,

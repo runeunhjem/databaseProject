@@ -22,6 +22,8 @@ var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var hotelsRouter = require("./routes/hotels");
 var roomsRouter = require("./routes/rooms");
+const reservationsRouter = require("./routes/reservations");
+
 
 var app = express();
 
@@ -30,7 +32,7 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 if (process.env.NODE_ENV === "development") {
-  // app.use(logger("dev")); // Detailed logging in dev mode
+  app.use(logger("dev")); // Detailed logging in dev mode
 } else {
   app.use(logger("combined")); // Standard logging in production
 }
@@ -44,6 +46,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/hotels", hotelsRouter);
 app.use("/rooms", roomsRouter);
+app.use("/reservations", reservationsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -62,4 +65,5 @@ app.use(function (err, req, res, next) {
 });
 
 module.exports = app;
+
 
