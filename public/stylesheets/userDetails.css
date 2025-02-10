@@ -30,11 +30,19 @@
   background-color: #7a3c13; /* Cocoa */
   color: #f8f9fa;
   padding: 12px;
-  text-align: center;
+  text-align: left;
 }
 
 .reservation-table td strong {
   color: #ffcc00; /* Gold */
+}
+
+.center {
+  text-align: center !important;
+}
+
+.price {
+  text-align: right !important;
 }
 
 /* ✅ Button Styling */
@@ -57,4 +65,18 @@
   .reservation-table td {
     padding: 8px;
   }
+}
+
+/* ✅ Clickable hotel name */
+.hotel-link {
+  color: #8baace; /* Gold */
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+  text-align: left;
+}
+
+.hotel-link:hover {
+  color: #e6b800; /* Darker Gold */
+  text-decoration: underline;
 }

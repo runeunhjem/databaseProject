@@ -26,15 +26,22 @@
           <tbody>
             <% user.reservations.forEach(reservation => { %>
             <tr>
-              <td><%= reservation.hotelName %></td>
+              <!-- ✅ Clickable Hotel Name -->
+              <td>
+                <a href="/hotels/<%= reservation.hotel_id %>" class="hotel-link">
+                  <%= reservation.hotelName %>
+                </a>
+              </td>
               <td><%= reservation.hotelLocation %></td>
               <td><%= reservation.room_type %></td>
-              <td><%= reservation.max_capacity %></td>
-              <td><strong>$<%= reservation.price %></strong></td>
+              <td class="center"><%= reservation.max_capacity %></td>
+              <td class="price"><strong>$<%= reservation.price %></strong></td>
               <td><%= new Date(reservation.rentFrom).toLocaleDateString() %></td>
               <td><%= new Date(reservation.rentTo).toLocaleDateString() %></td>
-              <td>
-                <button class="btn btn-danger delete-reservation" data-id="<%= reservation.reservation_id %>">Cancel</button>
+              <td class="center">
+                <button class="btn btn-danger delete-reservation" data-id="<%= reservation.reservation_id %>">
+                  Cancel
+                </button>
               </td>
             </tr>
             <% }); %>
