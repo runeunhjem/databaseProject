@@ -8,8 +8,8 @@ class RoomService {
     this.Reservation = db.Reservation;
   }
 
-  // ✅ Get all rooms with hotel info, updated room labels
-  async getAllRooms(userId) {
+  // ✅ Get all rooms with hotel info
+  async getAllRooms(userId = null) {
     try {
       return await sequelize.query(
         `SELECT r.*, h.name AS hotel_name, h.location AS hotel_location, h.id AS hotel_id,
@@ -28,7 +28,7 @@ class RoomService {
          FROM Rooms r
          JOIN Hotels h ON r.hotel_id = h.id`,
         {
-          replacements: { userId: userId || null }, // ✅ Ensure NULL instead of assuming user ID 1
+          replacements: { userId },
           type: QueryTypes.SELECT,
         }
       );
@@ -38,8 +38,34 @@ class RoomService {
     }
   }
 
+  // ✅ Get all reservations for the admin panel
+  async getAllReservations() {
+    try {
+      return await sequelize.query(
+        `SELECT r.id AS reservation_id,
+                u.id AS user_id, u.firstName, u.lastName, u.email,
+                h.name AS hotel_name, h.location AS hotel_location,
+                ro.id AS room_id, ro.capacity AS max_capacity, ro.price,
+                DATE_FORMAT(r.start_date, '%Y-%m-%d %H:%i') AS rentFrom,
+                DATE_FORMAT(r.end_date, '%Y-%m-%d %H:%i') AS rentTo,
+                TIMESTAMPDIFF(DAY, r.start_date, r.end_date) * ro.price AS total_price
+         FROM Reservations r
+         JOIN Users u ON r.user_id = u.id
+         JOIN Rooms ro ON r.room_id = ro.id
+         JOIN Hotels h ON ro.hotel_id = h.id
+         ORDER BY r.start_date DESC`,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
+    } catch (err) {
+      console.error("❌ Error fetching reservations:", err);
+      return [];
+    }
+  }
+
   // ✅ Get rooms for a specific hotel
-  async getHotelRooms(hotelId, userId = 1) {
+  async getHotelRooms(hotelId, userId = null) {
     try {
       return await sequelize.query(
         `SELECT r.*, h.name AS hotel_name, h.location AS hotel_location, h.id AS hotel_id,
@@ -69,7 +95,7 @@ class RoomService {
     }
   }
 
-  // ✅ Create a room
+  // ✅ Create a new room
   async create(capacity, price, hotelId) {
     try {
       return await sequelize.query("INSERT INTO Rooms (capacity, price, hotel_id) VALUES (:capacity, :price, :hotelId)", {

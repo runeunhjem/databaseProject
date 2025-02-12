@@ -21,7 +21,6 @@ router.get("/", async function (req, res, next) {
   }
 });
 
-
 // ✅ GET rooms for a specific hotel (Accessible to everyone)
 router.get("/:hotelId", async function (req, res, next) {
   try {
@@ -33,7 +32,7 @@ router.get("/:hotelId", async function (req, res, next) {
 });
 
 // ✅ POST create a new room (Only Admins)
-router.post("/add", checkIfAdmin, jsonParser, async function (req, res, next) {
+router.post("/add", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res, next) {
   try {
     const { capacity, price, hotelId } = req.body;
 
@@ -50,7 +49,7 @@ router.post("/add", checkIfAdmin, jsonParser, async function (req, res, next) {
 });
 
 // ✅ DELETE remove a room (Only Admins)
-router.delete("/", checkIfAdmin, jsonParser, async function (req, res, next) {
+router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res, next) {
   let id = req.body.id;
   await roomService.deleteRoom(id);
   res.end();

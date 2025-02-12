@@ -1,14 +1,11 @@
 const { sequelize } = require("../models");
-const { QueryTypes } = require("sequelize");
-const crypto = require("crypto"); // ✅ Use SHA-256 instead of bcrypt
+const { QueryTypes, Op } = require("sequelize");
+const crypto = require("crypto");
 
 class UserService {
   constructor(db) {
     this.client = db.sequelize;
     this.User = db.User;
-    this.Room = db.Room;
-    this.Hotel = db.Hotel;
-    this.Reservation = db.Reservation;
   }
 
   // ✅ SHA-256 Hashing Function
@@ -23,7 +20,7 @@ class UserService {
     try {
       await this.User.create({
         username,
-        password: hashedPassword, // ✅ Store SHA-256 hashed password
+        password: hashedPassword,
         firstName,
         lastName,
         email,
@@ -50,10 +47,21 @@ class UserService {
     return hashedInput === user.password;
   }
 
+  // ✅ Get all users
+  async getAll() {
+    try {
+      return await this.User.findAll({
+        attributes: ["id", "firstName", "lastName", "email", "role"],
+      });
+    } catch (error) {
+      console.error("❌ Error fetching all users:", error);
+      throw error;
+    }
+  }
+
   // ✅ Get user details including reservations
   async getOne(userId) {
     try {
-      // ✅ Fetch user details
       const user = await sequelize.query(
         `SELECT id, firstName, lastName, email, role
          FROM Users
@@ -66,7 +74,6 @@ class UserService {
 
       if (!user.length) return null;
 
-      // ✅ Fetch reservations
       const reservations = await sequelize.query(
         `SELECT
           r.id AS reservation_id,
@@ -100,6 +107,30 @@ class UserService {
     } catch (error) {
       console.error("❌ Error fetching user details:", error);
       throw error;
+    }
+  }
+
+  // ✅ Delete User (Prevent Admin Deletion)
+  async deleteUser(userId) {
+    try {
+      const user = await this.User.findOne({ where: { id: userId } });
+
+      if (!user) {
+        return { success: false, message: "User not found" };
+      }
+
+      if (user.role === "Admin") {
+        return { success: false, message: "Admins cannot be deleted!" };
+      }
+
+      await this.User.destroy({
+        where: { id: userId, role: { [Op.not]: "Admin" } },
+      });
+
+      return { success: true, message: "User deleted successfully!" };
+    } catch (error) {
+      console.error("❌ Error deleting user:", error);
+      return { success: false, message: "Internal error deleting user." };
     }
   }
 }

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head") %>
+  <body>
+    <%- include("partials/navbar") %>
+
+    <div class="container text-center mt-5">
+      <h1 class="text-light">User Management</h1>
+
+      <div class="user-list">
+        <% users.forEach(user => { %>
+          <div class="user-card">
+            <div class="user-info">
+              <strong><%= user.firstName %> <%= user.lastName %></strong> - <%= user.email %>
+              <p>Role: <%= user.role %></p>
+            </div>
+
+            <div class="user-actions">
+              <% if (user.role !== 'Admin') { %>
+                <button class="btn-danger delete-user" data-id="<%= user.id %>">Delete</button>
+              <% } %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+
+    <script src="/javascripts/deleteUser.js"></script>
+    <%- include("partials/footer") %>
+  </body>
+</html>

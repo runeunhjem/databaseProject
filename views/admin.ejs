@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head") %>
+  <body>
+    <%- include("partials/navbar") %>
+
+    <div class="container text-center mt-5">
+      <h1 class="text-light">Admin Panel</h1>
+
+      <!-- Admin Shortcuts -->
+      <div class="admin-menu">
+        <a href="#users" class="btn btn-primary">Manage Users</a>
+        <a href="#hotels" class="btn btn-primary">Manage Hotels</a>
+        <a href="#reservations" class="btn btn-primary">Manage Reservations</a>
+      </div>
+
+      <!-- Admin Sections -->
+      <div id="users">
+        <%- include("partials/adminUsers", { users: users }) %>
+      </div>
+
+      <div id="hotels">
+        <%- include("partials/adminHotels", { hotels: hotels }) %>
+      </div>
+
+      <div id="reservations">
+        <%- include("partials/adminReservations", { reservations: reservations }) %>
+      </div>
+    </div>
+
+    <%- include("partials/footer") %>
+  </body>
+</html>

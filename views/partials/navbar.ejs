@@ -1,36 +1,50 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="/">Hotel Booking</a>
+  <div class="container d-flex justify-content-between align-items-start">
 
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNav"
-      aria-controls="navbarNav"
-      aria-expanded="false"
-      aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <!-- Left Side: Hotel Booking -->
+    <div>
+      <a class="navbar-brand" href="/">Hotel Booking</a>
+    </div>
 
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="/hotels">Hotels</a></li>
-        <li class="nav-item"><a class="nav-link" href="/rooms">Rooms</a></li>
+    <!-- Right Side: Hi, USER above Navbar Links -->
+    <div class="d-flex flex-column align-items-end">
 
-        <% if (user) { %>
-          <!-- ✅ If user is logged in -->
-          <li class="nav-item"><a class="nav-link" href="/users/<%= user.id %>">My Reservations</a></li>
-          <% if (user.role === 'Admin') { %>
-            <li class="nav-item"><a class="nav-link text-warning" href="#">Admin Panel</a></li>
-          <% } %>
-          <li class="nav-item"><a class="nav-link text-danger" href="/auth/logout">Logout</a></li>
-        <% } else { %>
-          <!-- ✅ If user is NOT logged in -->
-          <li class="nav-item"><a class="nav-link" href="/auth/login">Login</a></li>
-          <li class="nav-item"><a class="nav-link" href="/auth/signup">Sign Up</a></li>
-        <% } %>
-      </ul>
+      <% if (user) { %>
+        <div class="text-light text-end mb-1 me-2">Hi, <%= user.firstName %>!</div>
+      <% } %>
+
+      <!-- Navbar -->
+      <div class="d-flex align-items-center">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="/hotels">Hotels</a></li>
+            <li class="nav-item"><a class="nav-link" href="/rooms">Rooms</a></li>
+
+            <% if (user) { %>
+              <li class="nav-item"><a class="nav-link" href="/users/<%= user.id %>">My Reservations</a></li>
+              <% if (user.role === 'Admin') { %>
+                <li class="nav-item"><a class="nav-link text-warning" href="/admin">Admin Panel</a></li>
+              <% } %>
+              <li class="nav-item"><a class="nav-link text-danger" href="/auth/logout">Logout</a></li>
+            <% } else { %>
+              <li class="nav-item"><a class="nav-link" href="/auth/login">Login</a></li>
+              <li class="nav-item"><a class="nav-link" href="/auth/signup">Sign Up</a></li>
+            <% } %>
+          </ul>
+        </div>
+      </div>
+
     </div>
   </div>
 </nav>

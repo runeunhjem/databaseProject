@@ -35,7 +35,7 @@ router.get("/:hotelId", async function (req, res, next) {
 });
 
 // ✅ POST create a new hotel (Only Admins)
-router.post("/", checkIfAdmin, jsonParser, async function (req, res, next) {
+router.post("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res, next) {
   try {
     let { name, location, rooms } = req.body;
 
@@ -52,29 +52,13 @@ router.post("/", checkIfAdmin, jsonParser, async function (req, res, next) {
 });
 
 // ✅ DELETE remove a hotel (Only Admins)
-router.delete("/", checkIfAdmin, jsonParser, async function (req, res, next) {
+router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res, next) {
   try {
     let id = req.body.id;
     await hotelService.deleteHotel(id);
     res.send("Hotel deleted successfully.");
   } catch (error) {
     res.status(500).send("Error deleting hotel.");
-  }
-});
-
-// ✅ POST rate a hotel (Only Users & Admins)
-router.post("/:hotelId/rate", checkIfAuthorized, jsonParser, async function (req, res, next) {
-  try {
-    const { value } = req.body;
-
-    if (value < 1 || value > 5) {
-      return res.status(400).json({ message: "Rating must be between 1 and 5" });
-    }
-
-    await hotelService.makeARate(req.user.id, req.params.hotelId, value);
-    res.json({ message: "Rating submitted successfully!" });
-  } catch (error) {
-    res.status(500).send("Error rating hotel.");
   }
 });
 

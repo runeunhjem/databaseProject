@@ -27,4 +27,13 @@ module.exports = {
     }
     return res.redirect("/auth/login");
   },
+
+  // ✅ Allow Admins to view the list of all users
+  canSeeUserList: function (req, res, next) {
+    if (req.user && req.user.role === "Admin") {
+      next();
+      return;
+    }
+    res.redirect("/auth/login");
+  },
 };

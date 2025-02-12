@@ -12,8 +12,10 @@ router.get("/signup", (req, res) => {
 
 // ✅ Render Login Page
 router.get("/login", (req, res) => {
-  res.render("login", { title: "Login", cssFile: "login" });
+  const username = req.user ? req.user.firstName : null; // ✅ Show first name if logged in
+  res.render("login", { title: "Login", cssFile: "login", username });
 });
+
 
 // ✅ Handle Signup Submission
 router.post("/signup", async (req, res) => {

@@ -2,8 +2,12 @@ const express = require("express");
 const router = express.Router();
 const db = require("../models");
 const UserService = require("../services/UserService");
-const { canSeeUserDetails } = require("./authMiddleware");
+const bodyParser = require("body-parser");
 
+// ✅ Import middleware functions
+const { canSeeUserList, canSeeUserDetails, checkIfAuthorized, checkIfAdmin } = require("./authMiddleware");
+
+const jsonParser = bodyParser.json();
 const userService = new UserService(db);
 
 // ✅ GET user details (Only for Admins or the user themselves)
@@ -18,6 +22,27 @@ router.get("/:userId", canSeeUserDetails, async function (req, res, next) {
     res.render("userDetails", { title: "User Details", cssFile: "userDetails", user });
   } catch (error) {
     res.status(500).send("Error fetching user details.");
+  }
+});
+
+// ✅ GET all users (Only for Admins)
+router.get("/", canSeeUserList, async function (req, res, next) {
+  try {
+    const users = await userService.getAll();
+    res.render("users", { title: "Users", cssFile: "users", users });
+  } catch (error) {
+    res.status(500).send("Error fetching users.");
+  }
+});
+
+// ✅ DELETE remove a user (Only Admins)
+router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res, next) {
+  try {
+    let id = req.body.id;
+    await userService.deleteUser(id);
+    res.send("User deleted successfully.");
+  } catch (error) {
+    res.status(500).send("Error deleting user.");
   }
 });
 

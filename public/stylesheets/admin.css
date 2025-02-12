@@ -1,0 +1,32 @@
+.admin-menu {
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.admin-menu a {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+}
+
+.admin-section {
+  margin-top: 40px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 10px;
+}
+
+.admin-section h2 {
+  margin-bottom: 15px;
+  color: #f8f9fa;
+}
+
+.table {
+  margin-top: 10px;
+  color: white;
+}
+
+.delete-user, .delete-hotel, .delete-reservation {
+  cursor: pointer;
+}

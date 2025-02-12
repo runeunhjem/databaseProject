@@ -10,6 +10,8 @@ const SQLiteStore = require("connect-sqlite3")(session);
 
 var app = express(); // ✅ Ensure `app` is defined before using it
 
+const adminRouter = require("./routes/admin"); // ✅ Add this at the top
+
 // ✅ Middleware Order Matters!
 // 📌 Place these BEFORE route declarations to ensure body parsing works correctly
 app.use(express.json()); // ✅ Parse JSON bodies
@@ -31,7 +33,7 @@ app.use(passport.session());
 
 // ✅ Middleware: Make `user` available globally in all views (AFTER session setup)
 app.use((req, res, next) => {
-  res.locals.user = req.user || null;
+  res.locals.user = req.user || null; // ✅ Make `user` available globally in all views
   next();
 });
 
@@ -52,6 +54,8 @@ app.use("/hotels", require("./routes/hotels"));
 app.use("/rooms", require("./routes/rooms"));
 app.use("/reservations", require("./routes/reservations"));
 app.use("/auth", require("./routes/auth")); // ✅ Keep auth route last for clarity
+app.use("/admin", adminRouter); // ✅ Register the admin route
+
 
 // ✅ Database Sync
 db.sequelize
@@ -71,4 +75,6 @@ app.use((err, req, res, next) => {
 });
 
 module.exports = app;
+
+
 
