@@ -1,0 +1,46 @@
+/* ✅ Form Container */
+.form-container {
+  max-width: 400px;
+  margin: 50px auto 0;
+  padding: 20px;
+  background-color: #5d4037;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ Labels */
+.form-label {
+  font-weight: bold;
+  color: #f8f9fa;
+}
+
+/* ✅ Input Fields */
+.form-control {
+  border: 2px solid #886447;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #2c2c2c;
+  color: #f8f9fa;
+}
+
+/* ✅ Focus Effect */
+.form-control:focus {
+  border-color: #ffcc00;
+  box-shadow: 0px 0px 8px rgba(255, 204, 0, 0.5);
+}
+
+/* ✅ Button */
+.btn-primary {
+  width: 100%;
+}
+
+a {
+  color: #f8f9fa;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #96caff;
+  text-decoration: underline;
+}

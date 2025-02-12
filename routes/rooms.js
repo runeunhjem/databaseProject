@@ -3,21 +3,26 @@ const router = express.Router();
 const RoomService = require("../services/RoomService");
 const db = require("../models");
 const bodyParser = require("body-parser");
-const jsonParser = bodyParser.json();
+const { checkIfAuthorized, checkIfAdmin } = require("./authMiddleware");
 
+const jsonParser = bodyParser.json();
 const roomService = new RoomService(db);
 
-// ✅ GET all rooms
+// ✅ GET all rooms (Accessible to everyone)
 router.get("/", async function (req, res, next) {
   try {
-    const rooms = await roomService.getAllRooms();
+    const userId = req.user ? req.user.id : null; // ✅ Ensure userId is correctly passed
+    const rooms = await roomService.getAllRooms(userId);
+    console.log("Fetching rooms for user ID:", userId);
     res.render("rooms", { title: "Rooms", cssFile: "rooms", rooms });
   } catch (error) {
+    console.error("❌ Error fetching rooms:", error);
     res.status(500).send("Error fetching rooms.");
   }
 });
 
-// ✅ GET rooms for a specific hotel
+
+// ✅ GET rooms for a specific hotel (Accessible to everyone)
 router.get("/:hotelId", async function (req, res, next) {
   try {
     const rooms = await roomService.getHotelRooms(req.params.hotelId);
@@ -27,8 +32,8 @@ router.get("/:hotelId", async function (req, res, next) {
   }
 });
 
-// ✅ POST create a new room (Fixed route)
-router.post("/add", jsonParser, async function (req, res, next) {
+// ✅ POST create a new room (Only Admins)
+router.post("/add", checkIfAdmin, jsonParser, async function (req, res, next) {
   try {
     const { capacity, price, hotelId } = req.body;
 
@@ -44,16 +49,16 @@ router.post("/add", jsonParser, async function (req, res, next) {
   }
 });
 
-// ✅ DELETE remove a room
-router.delete("/", jsonParser, async function (req, res, next) {
+// ✅ DELETE remove a room (Only Admins)
+router.delete("/", checkIfAdmin, jsonParser, async function (req, res, next) {
   let id = req.body.id;
   await roomService.deleteRoom(id);
   res.end();
 });
 
-// ✅ POST rent a room (reservation)
-router.post("/reservation", jsonParser, async function (req, res, next) {
-  let userId = req.body.userId;
+// ✅ POST rent a room (Only Users & Admins)
+router.post("/reservation", checkIfAuthorized, jsonParser, async function (req, res, next) {
+  let userId = req.user.id;
   let roomId = req.body.roomId;
   let startDate = req.body.startDate;
   let endDate = req.body.endDate;

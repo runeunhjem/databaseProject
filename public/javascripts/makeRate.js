@@ -13,15 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ value: rating }),
       });
 
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
+      if (!response.ok) throw new Error(await response.text());
 
       alert("✅ Thank you for your rating!");
       window.location.reload();
     } catch (error) {
-      console.error("❌ Error submitting rating:", error);
-      alert("❌ Something went wrong. Please try again.");
+      alert("❌ Something went wrong.");
     }
   };
 });

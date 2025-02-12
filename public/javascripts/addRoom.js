@@ -3,13 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const addRoomButton = document.getElementById("add-room");
 
-  if (!addRoomButton) {
-    console.error("❌ Add Room button not found in DOM!");
-    return;
-  }
+  if (!addRoomButton) return; // ✅ Exit script if button is missing
 
   addRoomButton.addEventListener("click", async () => {
-    const hotelId = window.location.pathname.split("/").pop(); // Extract hotelId from URL
+    const hotelId = window.location.pathname.split("/").pop();
     const capacity = prompt("Enter room capacity:");
     const price = prompt("Enter price per night:");
 
@@ -18,8 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    console.log(`🟢 Adding room: Capacity=${capacity}, Price=$${price}, Hotel ID=${hotelId}`);
-
     try {
       const response = await fetch(`/rooms/add`, {
         method: "POST",
@@ -27,14 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ hotelId, capacity, price }),
       });
 
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
+      if (!response.ok) throw new Error(await response.text());
 
       alert("✅ Room added successfully!");
       window.location.reload();
     } catch (error) {
-      console.error("❌ Error adding room:", error);
       alert("❌ Failed to add room.");
     }
   });

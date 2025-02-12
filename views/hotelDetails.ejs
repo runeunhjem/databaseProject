@@ -9,48 +9,46 @@
       <p class="hotel-location">Location: <strong><%= hotel.location %></strong></p>
 
       <h2 class="rating">Rating: <%= hotel.avgRating %></h2>
-      <% if (!hotel.rated) { %>
-        <button onclick="makeRate(1, '/hotels/<%= hotel.id %>/rate')" class="btn btn-success">Rate this hotel</button>
-      <% } %>
+      <% if (user) { %> <% if (!hotel.rated) { %>
+      <button onclick="makeRate('<%= user.id %>', '/hotels/<%= hotel.id %>/rate')" class="btn btn-success">
+        Rate this hotel
+      </button>
+      <% } %> <% } %>
 
       <!-- ✅ New Wrapper for Rooms & Button -->
       <div class="room-wrapper">
         <h3 class="mt-4">Available Rooms</h3>
-
         <div class="room-list">
-          <% if (hotel.Rooms && hotel.Rooms.length > 0) { %>
-            <% hotel.Rooms.forEach(room => { %>
-              <div class="room-card <%= room.is_reserved ? 'reserved-room' : '' %>">
-                <div class="room-info">
-                  <h4><%= room.room_type %></h4>
-                  <p>Capacity: <strong><%= room.max_capacity %></strong></p>
-                  <p>Price: <strong>$<%= room.price %> per night</strong></p>
-                </div>
+          <% hotel.Rooms.forEach(room => { %>
+          <div class="room-card <%= room.is_reserved ? 'reserved-room' : '' %>">
+            <div class="room-info">
+              <h4><%= room.room_type %></h4>
+              <p>Capacity: <strong><%= room.max_capacity %></strong></p>
+              <p>Price: <strong>$<%= room.price %> per night</strong></p>
+            </div>
 
-                <% if (room.is_reserved) { %>
-                  <p class="reservation-notice">✔️ You already have a reservation here</p>
-                <% } else { %>
-                  <p class="reservation-placeholder">Room is available</p>
-                <% } %>
+            <% if (room.is_reserved) { %>
+            <p class="reservation-notice">✔️ You already have a reservation here</p>
+            <% } else { %>
+            <p class="reservation-placeholder">Room is available</p>
+            <% } %>
 
-                <div class="room-actions">
-                  <% if (!room.is_reserved) { %>
-                    <button class="btn-primary rent-room" data-id="<%= room.id %>">Rent</button>
-                  <% } else { %>
-                    <a href="/users/1" class="btn-warning">Reservations</a>
-                  <% } %>
-                </div>
-              </div>
-            <% }); %>
-          <% } else { %>
-            <p class="text-danger">No rooms available in this hotel.</p>
-          <% } %>
+            <div class="room-actions">
+              <% if (user) { %> <% if (!room.is_reserved) { %>
+              <button class="btn-primary rent-room" data-id="<%= room.id %>">Rent</button>
+              <% } else { %>
+              <a href="/users/<%= user.id %>" class="btn-warning">Reservations</a>
+              <% } %> <% } %>
+            </div>
+          </div>
+          <% }); %>
         </div>
 
-        <!-- ✅ Add Room Button (Now correctly below all room cards) -->
+        <% if (user && user.role === 'Admin') { %>
         <div class="add-room-container">
           <button id="add-room" class="btn-primary add-room-btn">+ Add Room</button>
         </div>
+        <% } %>
       </div>
     </div>
 

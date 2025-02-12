@@ -3,11 +3,12 @@ const router = express.Router();
 const HotelService = require("../services/HotelService");
 const db = require("../models");
 const bodyParser = require("body-parser");
-const jsonParser = bodyParser.json();
+const { checkIfAuthorized, checkIfAdmin } = require("./authMiddleware");
 
+const jsonParser = bodyParser.json();
 const hotelService = new HotelService(db);
 
-// ✅ GET all hotels
+// ✅ GET all hotels (Accessible to everyone)
 router.get("/", async function (req, res, next) {
   try {
     const hotels = await hotelService.get();
@@ -17,10 +18,10 @@ router.get("/", async function (req, res, next) {
   }
 });
 
-// ✅ GET hotel details
+// ✅ GET hotel details (Accessible to everyone)
 router.get("/:hotelId", async function (req, res, next) {
   try {
-    const userId = 1; // Static user ID (Replace with actual logged-in user ID if needed)
+    const userId = req.user?.id ?? 0;
     const hotel = await hotelService.getHotelDetails(req.params.hotelId, userId);
 
     if (!hotel) {
@@ -33,10 +34,8 @@ router.get("/:hotelId", async function (req, res, next) {
   }
 });
 
-
-
-// ✅ POST create a new hotel with room types
-router.post("/", jsonParser, async function (req, res, next) {
+// ✅ POST create a new hotel (Only Admins)
+router.post("/", checkIfAdmin, jsonParser, async function (req, res, next) {
   try {
     let { name, location, rooms } = req.body;
 
@@ -44,23 +43,7 @@ router.post("/", jsonParser, async function (req, res, next) {
       return res.status(400).json({ message: "Hotel name, location, and at least one room type are required!" });
     }
 
-    // ✅ Use db.sequelize instead of sequelize
-    const [hotelResult, metadata] = await db.sequelize.query(
-      "INSERT INTO Hotels (name, location) VALUES (:name, :location)",
-      { replacements: { name, location } }
-    );
-
-    // ✅ Get the newly created hotel ID
-    const hotelId = metadata.insertId || hotelResult; // Some MySQL versions return `metadata.insertId`
-
-    // ✅ Insert rooms for this hotel
-    for (const room of rooms) {
-      await db.sequelize.query(
-        "INSERT INTO Rooms (hotel_id, capacity, price) VALUES (:hotelId, :capacity, :price)",
-        { replacements: { hotelId, capacity: room.capacity, price: room.price } }
-      );
-    }
-
+    await hotelService.create(name, location, rooms);
     res.status(201).json({ message: "Hotel and rooms created successfully!" });
   } catch (error) {
     console.error("Error creating hotel and rooms:", error);
@@ -68,9 +51,8 @@ router.post("/", jsonParser, async function (req, res, next) {
   }
 });
 
-
-// ✅ DELETE remove a hotel
-router.delete("/", jsonParser, async function (req, res, next) {
+// ✅ DELETE remove a hotel (Only Admins)
+router.delete("/", checkIfAdmin, jsonParser, async function (req, res, next) {
   try {
     let id = req.body.id;
     await hotelService.deleteHotel(id);
@@ -80,15 +62,16 @@ router.delete("/", jsonParser, async function (req, res, next) {
   }
 });
 
-// ✅ POST rate a hotel
-router.post("/:hotelId/rate", jsonParser, async function (req, res, next) {
+// ✅ POST rate a hotel (Only Users & Admins)
+router.post("/:hotelId/rate", checkIfAuthorized, jsonParser, async function (req, res, next) {
   try {
     const { value } = req.body;
+
     if (value < 1 || value > 5) {
       return res.status(400).json({ message: "Rating must be between 1 and 5" });
     }
 
-    await hotelService.makeARate(1, req.params.hotelId, value);
+    await hotelService.makeARate(req.user.id, req.params.hotelId, value);
     res.json({ message: "Rating submitted successfully!" });
   } catch (error) {
     res.status(500).send("Error rating hotel.");

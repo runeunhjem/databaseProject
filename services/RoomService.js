@@ -9,7 +9,7 @@ class RoomService {
   }
 
   // ✅ Get all rooms with hotel info, updated room labels
-  async getAllRooms(userId = 1) {
+  async getAllRooms(userId) {
     try {
       return await sequelize.query(
         `SELECT r.*, h.name AS hotel_name, h.location AS hotel_location, h.id AS hotel_id,
@@ -28,12 +28,12 @@ class RoomService {
          FROM Rooms r
          JOIN Hotels h ON r.hotel_id = h.id`,
         {
-          replacements: { userId },
+          replacements: { userId: userId || null }, // ✅ Ensure NULL instead of assuming user ID 1
           type: QueryTypes.SELECT,
         }
       );
     } catch (err) {
-      console.error("Error fetching rooms:", err);
+      console.error("❌ Error fetching rooms:", err);
       return [];
     }
   }
@@ -64,7 +64,7 @@ class RoomService {
         }
       );
     } catch (err) {
-      console.error("Error fetching hotel rooms:", err);
+      console.error("❌ Error fetching hotel rooms:", err);
       return [];
     }
   }
@@ -89,24 +89,26 @@ class RoomService {
         replacements: { roomId },
       });
     } catch (err) {
-      console.error("Error deleting room:", err);
+      console.error("❌ Error deleting room:", err);
       return err;
     }
   }
 
-  // ✅ Rent a room (create reservation)
+  // ✅ Rent a room using the stored procedure
   async rentARoom(userId, roomId, startDate, endDate) {
     try {
-      await sequelize.query(
-        "INSERT INTO Reservations (user_id, room_id, start_date, end_date) VALUES (:userId, :roomId, :startDate, :endDate)",
-        {
-          replacements: { userId, roomId, startDate, endDate },
-        }
-      );
+      await sequelize.query("CALL insert_reservation(:UserId, :RoomId, :StartDate, :EndDate)", {
+        replacements: {
+          UserId: userId,
+          RoomId: roomId,
+          StartDate: startDate,
+          EndDate: endDate,
+        },
+      });
       return { success: true, message: "Reservation created successfully!" };
     } catch (err) {
-      console.error("❌ Error renting a room:", err);
-      return { success: false, message: "An error occurred during reservation." };
+      console.error("❌ Error reserving room:", err);
+      return { success: false, message: err.message };
     }
   }
 }

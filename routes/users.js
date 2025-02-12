@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const UserService = require("../services/UserService");
 const db = require("../models");
+const UserService = require("../services/UserService");
+const { canSeeUserDetails } = require("./authMiddleware");
 
 const userService = new UserService(db);
 
-// ✅ GET user details
-router.get("/:userId", async function (req, res, next) {
+// ✅ GET user details (Only for Admins or the user themselves)
+router.get("/:userId", canSeeUserDetails, async function (req, res, next) {
   try {
     const user = await userService.getOne(req.params.userId);
 

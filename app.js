@@ -4,66 +4,71 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var db = require("./models");
+const session = require("express-session");
+const passport = require("./config/passport");
+const SQLiteStore = require("connect-sqlite3")(session);
 
-// If you need to force-drop & recreate tables for testing, change:
-// db.sequelize.sync({ force: true }); // ⚠️ This will delete ALL data & recreate tables
-// Only use { force: true; } if you need a fresh database for testing.
+var app = express(); // ✅ Ensure `app` is defined before using it
 
-db.sequelize
-  .sync()
-  .then(() => {
-    console.log("✅ Database synced successfully!");
+// ✅ Middleware Order Matters!
+// 📌 Place these BEFORE route declarations to ensure body parsing works correctly
+app.use(express.json()); // ✅ Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // ✅ Parse URL-encoded form data
+app.use(cookieParser());
+
+// ✅ Session Setup
+app.use(
+  session({
+    secret: "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    store: new SQLiteStore({ db: "sessions.sqlite" }),
   })
-  .catch((err) => {
-    console.error("❌ Database sync failed:", err);
-  });
+);
 
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
-var hotelsRouter = require("./routes/hotels");
-var roomsRouter = require("./routes/rooms");
-const reservationsRouter = require("./routes/reservations");
+app.use(passport.initialize());
+app.use(passport.session());
 
+// ✅ Middleware: Make `user` available globally in all views (AFTER session setup)
+app.use((req, res, next) => {
+  res.locals.user = req.user || null;
+  next();
+});
 
-var app = express();
-
-// view engine setup
+// ✅ View Engine Setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-if (process.env.NODE_ENV === "development") {
-  app.use(logger("dev")); // Detailed logging in dev mode
-} else {
-  app.use(logger("combined")); // Standard logging in production
-}
+// ✅ Logging
+app.use(logger(process.env.NODE_ENV === "development" ? "dev" : "combined"));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+// ✅ Serve Static Files
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
-app.use("/hotels", hotelsRouter);
-app.use("/rooms", roomsRouter);
-app.use("/reservations", reservationsRouter);
+// ✅ Routes (Define AFTER Middleware)
+app.use("/", require("./routes/index"));
+app.use("/users", require("./routes/users"));
+app.use("/hotels", require("./routes/hotels"));
+app.use("/rooms", require("./routes/rooms"));
+app.use("/reservations", require("./routes/reservations"));
+app.use("/auth", require("./routes/auth")); // ✅ Keep auth route last for clarity
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
+// ✅ Database Sync
+db.sequelize
+  .sync()
+  .then(() => console.log("✅ Database synced successfully!"))
+  .catch((err) => console.error("❌ Database sync failed:", err));
 
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
+// ✅ Handle 404 Errors
+app.use((req, res, next) => next(createError(404)));
+
+// ✅ Error Handler
+app.use((err, req, res, next) => {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
-
-  // render the error page
   res.status(err.status || 500);
   res.render("error");
 });
 
 module.exports = app;
-
 

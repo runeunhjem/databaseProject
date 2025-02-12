@@ -2,7 +2,6 @@
   <div class="container">
     <a class="navbar-brand" href="/">Hotel Booking</a>
 
-    <!-- ✅ Ensure Bootstrap toggler works -->
     <button
       class="navbar-toggler"
       type="button"
@@ -18,7 +17,19 @@
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="/hotels">Hotels</a></li>
         <li class="nav-item"><a class="nav-link" href="/rooms">Rooms</a></li>
-        <li class="nav-item"><a class="nav-link" href="/users/1">My Reservations</a></li>
+
+        <% if (user) { %>
+          <!-- ✅ If user is logged in -->
+          <li class="nav-item"><a class="nav-link" href="/users/<%= user.id %>">My Reservations</a></li>
+          <% if (user.role === 'Admin') { %>
+            <li class="nav-item"><a class="nav-link text-warning" href="#">Admin Panel</a></li>
+          <% } %>
+          <li class="nav-item"><a class="nav-link text-danger" href="/auth/logout">Logout</a></li>
+        <% } else { %>
+          <!-- ✅ If user is NOT logged in -->
+          <li class="nav-item"><a class="nav-link" href="/auth/login">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="/auth/signup">Sign Up</a></li>
+        <% } %>
       </ul>
     </div>
   </div>
