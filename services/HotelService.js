@@ -27,16 +27,15 @@ class HotelService {
     try {
       return await sequelize.query(
         `SELECT h.id, h.name, h.location,
-        COALESCE(ROUND(AVG(r.rating), 1), 'No ratings yet') AS avgRating
+        COALESCE(ROUND(AVG(r.rating), 1), 0) AS avgRating
         FROM Hotels h
         LEFT JOIN Ratings r ON h.id = r.hotel_id
-        GROUP BY h.id`,
-        {
-          type: QueryTypes.SELECT,
-        }
+        GROUP BY h.id
+        ORDER BY h.name ASC, h.location ASC, avgRating DESC`,
+        { type: QueryTypes.SELECT }
       );
     } catch (err) {
-      console.error("Error fetching hotels:", err);
+      console.error("❌ Error fetching hotels:", err);
       return [];
     }
   }
@@ -105,7 +104,7 @@ class HotelService {
       return hotel[0];
     } catch (err) {
       console.error("Error fetching hotel details:", err);
-      return null;
+      throw err;
     }
   }
 

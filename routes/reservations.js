@@ -25,4 +25,34 @@ router.delete("/:reservationId", async (req, res) => {
   }
 });
 
+// ✅ GET Reservation Details
+router.get("/:reservationId", async function (req, res, next) {
+  try {
+    const reservation = await reservationService.getOne(req.params.reservationId);
+
+    if (!reservation) {
+      return res.status(404).render("error", {
+        title: "Reservation Not Found",
+        status: 404,
+        message: "Reservation Not Found",
+        details: `The reservation with ID ${req.params.reservationId} does not exist.`,
+      });
+    }
+
+    res.render("reservationDetails", {
+      title: "Reservation Details",
+      cssFile: "reservationDetails",
+      reservation,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching reservation details:", error);
+    res.status(500).render("error", {
+      title: "Internal Server Error",
+      status: 500,
+      message: "An error occurred while fetching the reservation details.",
+    });
+  }
+});
+
+
 module.exports = router;

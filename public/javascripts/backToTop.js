@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
   const backToTopBtn = document.getElementById("backToTop");
 
-  // Show button when scrolling down
+  // Show button when scrolling down past 200px
   window.addEventListener("scroll", function () {
-    if (window.scrollY > 300) {
+    if (window.scrollY > 200) {
       backToTopBtn.classList.add("visible");
     } else {
       backToTopBtn.classList.remove("visible");

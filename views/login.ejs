@@ -5,6 +5,18 @@
     <%- include("partials/navbar") %>
 
     <div class="container">
+      <h1>Welcome !</h1>
+
+      <!-- ✅ Display user information if logged in -->
+      <% if (user) { %>
+        <div class="logged-in-box text-center">
+          <p>You are currently logged in as <b><%= user.username %></b></p>
+          <form action="/auth/logout" method="POST">
+            <button class="btn btn-danger">Sign out</button>
+          </form>
+        </div>
+      <% } %>
+
       <div class="form-container">
         <h1 class="text-center">Login</h1>
         <form action="/auth/login" method="POST">
@@ -32,7 +44,9 @@
           </div>
           <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
-        <p class="text-center mt-3">Don't have an account? <a href="/auth/signup">Sign up here</a>.</p>
+        <p class="text-center mt-3">
+          Don't have an account? <a href="/auth/signup">Sign up here</a>.
+        </p>
       </div>
     </div>
 

@@ -61,7 +61,7 @@ class RoomService {
         JOIN Users u ON r.user_id = u.id
         JOIN Rooms ro ON r.room_id = ro.id
         JOIN Hotels h ON ro.hotel_id = h.id
-        ORDER BY r.start_date DESC`,
+        ORDER BY u.firstName ASC, u.lastName ASC, h.name ASC, r.start_date ASC`,
         {
           type: QueryTypes.SELECT,
         }
@@ -131,7 +131,7 @@ class RoomService {
   // ✅ Rent a room using the stored procedure
   async rentARoom(userId, roomId, startDate, endDate) {
     try {
-      await sequelize.query("CALL insert_reservation(:UserId, :RoomId, :StartDate, :EndDate)", {
+      const result = await sequelize.query("CALL insert_reservation(:UserId, :RoomId, :StartDate, :EndDate)", {
         replacements: {
           UserId: userId,
           RoomId: roomId,
@@ -139,10 +139,33 @@ class RoomService {
           EndDate: endDate,
         },
       });
-      return { success: true, message: "Reservation created successfully!" };
+      return { success: true, message: "Reservation created successfully!", result };
     } catch (err) {
       console.error("❌ Error reserving room:", err);
-      return { success: false, message: err.message };
+      return { success: false, message: "Failed to create reservation. Please try again later." };
+    }
+  }
+
+  // ✅ Get specific room details
+  async getRoomDetails(roomId, userId) {
+    try {
+      const room = await sequelize.query(
+        `SELECT r.id, r.capacity, r.price, h.id AS hotelId, h.name AS hotelName, h.location
+        FROM Rooms r
+        JOIN Hotels h ON r.hotel_id = h.id
+        WHERE r.id = :roomId`,
+        {
+          replacements: { roomId },
+          type: QueryTypes.SELECT,
+        }
+      );
+
+      if (!room.length) return null; // If no room is found, return null
+
+      return room[0]; // Return the first matching result
+    } catch (err) {
+      console.error("❌ Error fetching room details:", err);
+      throw err;
     }
   }
 }

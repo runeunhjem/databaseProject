@@ -52,6 +52,11 @@ class UserService {
     try {
       return await this.User.findAll({
         attributes: ["id", "firstName", "lastName", "email", "role"],
+        order: [
+          ["firstName", "ASC"],
+          ["lastName", "ASC"],
+          ["email", "ASC"],
+        ],
       });
     } catch (error) {
       console.error("❌ Error fetching all users:", error);
@@ -64,8 +69,8 @@ class UserService {
     try {
       const user = await sequelize.query(
         `SELECT id, firstName, lastName, email, role
-         FROM Users
-         WHERE id = :userId`,
+        FROM Users
+        WHERE id = :userId`,
         {
           replacements: { userId },
           type: QueryTypes.SELECT,

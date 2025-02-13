@@ -1,3 +1,24 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head") %>
+  <body class="d-flex flex-column min-vh-100">
+    <%- include("partials/navbar") %>
+
+    <div class="container text-center mt-5">
+      <div class="error-box p-4">
+        <h1 class="error-title">Oops! Something went wrong</h1>
+        <h2 class="error-code"><%= status || 500 %> - <%= message || "Unexpected Error" %></h2>
+
+        <% if (typeof details !== "undefined" && details) { %>
+          <p class="error-description"><%= details %></p>
+        <% } else { %>
+          <p class="error-description">The requested resource could not be found or accessed.</p>
+        <% } %>
+
+        <a href="/" class="btn btn-primary mt-3">Back to Home</a>
+      </div>
+    </div>
+
+    <%- include("partials/footer") %>
+  </body>
+</html>

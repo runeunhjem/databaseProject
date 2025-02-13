@@ -16,12 +16,23 @@ router.get("/:userId", canSeeUserDetails, async function (req, res, next) {
     const user = await userService.getOne(req.params.userId);
 
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(404).render("error", {
+        title: "User Not Found",
+        status: 404,
+        message: "User Not Found",
+        details: "The requested user does not exist in our database.",
+      });
     }
 
     res.render("userDetails", { title: "User Details", cssFile: "userDetails", user });
   } catch (error) {
-    res.status(500).send("Error fetching user details.");
+    console.error("❌ Error fetching user details:", error);
+    res.status(500).render("error", {
+      title: "Internal Error",
+      status: 500,
+      message: "An error occurred while retrieving the user.",
+      details: "",
+    });
   }
 });
 
@@ -47,4 +58,7 @@ router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (
 });
 
 module.exports = router;
+
+
+
 

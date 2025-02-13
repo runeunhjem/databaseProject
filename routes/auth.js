@@ -66,6 +66,18 @@ router.get("/logout", (req, res, next) => {
   });
 });
 
+// ✅ Handle Logout (POST Request)
+router.post("/logout", (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    req.session.destroy(() => {
+      res.redirect("/auth/login"); // ✅ Redirect to login after logout
+    });
+  });
+});
+
 // ✅ Admin Route
 router.get("/admin", (req, res) => {
   if (!req.user || req.user.role !== "Admin") {

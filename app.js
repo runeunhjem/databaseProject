@@ -64,17 +64,28 @@ db.sequelize
   .catch((err) => console.error("❌ Database sync failed:", err));
 
 // ✅ Handle 404 Errors
-app.use((req, res, next) => next(createError(404)));
+app.use((req, res, next) => {
+  res.status(404).render("error", {
+    title: "Page Not Found",
+    status: 404,
+    message: "Page not found",
+    details: `The URL ${req.originalUrl} does not exist.`,
+  });
+});
 
-// ✅ Error Handler
+// ✅ General Error Handler
 app.use((err, req, res, next) => {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
-  res.status(err.status || 500);
-  res.render("error");
+  res.status(err.status || 500).render("error", {
+    title: "Error",
+    status: err.status || 500,
+    message: err.message || "Something went wrong!",
+    details: req.app.get("env") === "development" ? err.stack : "",
+  });
 });
 
 module.exports = app;
+
+
 
 
 

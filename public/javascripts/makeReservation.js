@@ -22,6 +22,17 @@ function setupReservationModal(modal) {
 
   let selectedRoomId = null;
 
+  // ✅ Prevent selecting past dates
+  function setMinDate() {
+    const today = new Date();
+    const formattedDate = today.toISOString().split("T")[0];
+
+    startDateInput.setAttribute("min", formattedDate);
+    endDateInput.setAttribute("min", formattedDate);
+  }
+
+  setMinDate(); // ✅ Set min date on page load
+
   document.querySelectorAll(".rent-room").forEach((button) => {
     button.addEventListener("click", (event) => {
       selectedRoomId = event.target.getAttribute("data-id");
@@ -63,13 +74,19 @@ function setupReservationModal(modal) {
 
     const startDate = formatDateWithTime(startDateInput.value);
     const endDate = formatDateWithTime(endDateInput.value);
+    const today = new Date().toISOString().slice(0, 10);
 
     if (!startDate || !endDate) {
       alert("❌ Please select both start and end dates.");
       return;
     }
 
-    if (new Date(startDate) >= new Date(endDate)) {
+    if (startDate < today) {
+      alert("❌ Start date cannot be in the past.");
+      return;
+    }
+
+    if (endDate <= startDate) {
       alert("❌ End date must be after the start date.");
       return;
     }

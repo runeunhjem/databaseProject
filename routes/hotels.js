@@ -25,12 +25,23 @@ router.get("/:hotelId", async function (req, res, next) {
     const hotel = await hotelService.getHotelDetails(req.params.hotelId, userId);
 
     if (!hotel) {
-      return res.status(404).send("Hotel not found");
+      return res.status(404).render("error", {
+        title: "Hotel Not Found",
+        status: 404,
+        message: "Hotel Not Found",
+        details: `The hotel with ID ${req.params.hotelId} does not exist.`,
+      });
     }
 
     res.render("hotelDetails", { title: hotel.name, cssFile: "hotelDetails", hotel });
   } catch (error) {
-    res.status(500).send("Error fetching hotel details.");
+    console.error("❌ Error fetching hotel details:", error);
+    res.status(500).render("error", {
+      title: "Internal Server Error",
+      status: 500,
+      message: "An error occurred while retrieving the hotel.",
+      details: "",
+    });
   }
 });
 

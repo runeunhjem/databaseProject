@@ -21,13 +21,30 @@ router.get("/", async function (req, res, next) {
   }
 });
 
-// ✅ GET rooms for a specific hotel (Accessible to everyone)
-router.get("/:hotelId", async function (req, res, next) {
+// ✅ GET room details (Accessible to everyone)
+router.get("/:roomId", async function (req, res, next) {
   try {
-    const rooms = await roomService.getHotelRooms(req.params.hotelId);
-    res.render("rooms", { title: "Rooms", cssFile: "rooms", rooms });
+    const userId = req.user?.id ?? 0;
+    const room = await roomService.getRoomDetails(req.params.roomId, userId);
+
+    if (!room) {
+      return res.status(404).render("error", {
+        title: "Room Not Found",
+        status: 404,
+        message: "Room Not Found",
+        details: `The room with ID ${req.params.roomId} does not exist.`,
+      });
+    }
+
+    res.render("roomDetails", { title: `Room ${room.id}`, cssFile: "roomDetails", room });
   } catch (error) {
-    res.status(500).send("Error fetching rooms.");
+    console.error("❌ Error fetching room details:", error);
+    res.status(500).render("error", {
+      title: "Internal Server Error",
+      status: 500,
+      message: "An error occurred while retrieving the room details.",
+      details: "",
+    });
   }
 });
 

@@ -26,7 +26,11 @@ router.get("/", checkIfAdmin, async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Error fetching admin data:", error);
-    res.status(500).send("Error loading admin panel.");
+    res.status(500).render("error", {
+      title: "Admin Panel Error",
+      status: 500,
+      message: "Failed to load the admin panel.",
+    });
   }
 });
 
