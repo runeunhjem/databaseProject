@@ -25,8 +25,8 @@ class RoomService {
             WHEN EXISTS (SELECT 1 FROM Reservations WHERE room_id = r.id AND user_id = :userId)
             THEN 1 ELSE 0
           END AS is_reserved
-         FROM Rooms r
-         JOIN Hotels h ON r.hotel_id = h.id`,
+        FROM Rooms r
+        JOIN Hotels h ON r.hotel_id = h.id`,
         {
           replacements: { userId },
           type: QueryTypes.SELECT,
@@ -42,18 +42,26 @@ class RoomService {
   async getAllReservations() {
     try {
       return await sequelize.query(
-        `SELECT r.id AS reservation_id,
-                u.id AS user_id, u.firstName, u.lastName, u.email,
-                h.name AS hotel_name, h.location AS hotel_location,
-                ro.id AS room_id, ro.capacity AS max_capacity, ro.price,
-                DATE_FORMAT(r.start_date, '%Y-%m-%d %H:%i') AS rentFrom,
-                DATE_FORMAT(r.end_date, '%Y-%m-%d %H:%i') AS rentTo,
-                TIMESTAMPDIFF(DAY, r.start_date, r.end_date) * ro.price AS total_price
-         FROM Reservations r
-         JOIN Users u ON r.user_id = u.id
-         JOIN Rooms ro ON r.room_id = ro.id
-         JOIN Hotels h ON ro.hotel_id = h.id
-         ORDER BY r.start_date DESC`,
+        `SELECT r.id AS id,
+          u.id AS userId, CONCAT(u.firstName, ' ', u.lastName) AS userName, u.email,
+          h.id AS hotelId, h.name AS hotelName, h.location AS hotelLocation,
+          ro.id AS roomId,
+          CASE
+            WHEN ro.capacity = 2 THEN 'Double Room'
+            WHEN ro.capacity = 4 THEN 'Family Room'
+            WHEN ro.capacity = 5 THEN 'Junior Suite'
+            WHEN ro.capacity > 5 THEN 'Suite'
+            ELSE CONCAT('Room for ', ro.capacity, ' people')
+          END AS roomType,
+          ro.price AS roomPrice,
+          DATE_FORMAT(r.start_date, '%d-%m-%Y') AS startDate,
+          DATE_FORMAT(r.end_date, '%d-%m-%Y') AS endDate,
+          (DATEDIFF(r.end_date, r.start_date) * ro.price) AS totalPrice
+        FROM Reservations r
+        JOIN Users u ON r.user_id = u.id
+        JOIN Rooms ro ON r.room_id = ro.id
+        JOIN Hotels h ON ro.hotel_id = h.id
+        ORDER BY r.start_date DESC`,
         {
           type: QueryTypes.SELECT,
         }

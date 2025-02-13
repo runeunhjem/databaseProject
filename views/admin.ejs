@@ -15,18 +15,19 @@
       </div>
 
       <!-- Admin Sections -->
-      <div id="users">
-        <%- include("partials/adminUsers", { users: users }) %>
-      </div>
+      <div id="users"><%- include("partials/adminUsers", { users: users }) %></div>
 
-      <div id="hotels">
-        <%- include("partials/adminHotels", { hotels: hotels }) %>
-      </div>
+      <div id="hotels"><%- include("partials/adminHotels", { hotels: hotels }) %></div>
 
-      <div id="reservations">
-        <%- include("partials/adminReservations", { reservations: reservations }) %>
-      </div>
+      <div id="reservations"><%- include("partials/adminReservations", { reservations: reservations }) %></div>
     </div>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top btn btn-warning">
+      <i class="bi bi-arrow-up-circle-fill"></i>
+    </button>
+
+    <script src="/javascripts/backToTop.js"></script>
 
     <%- include("partials/footer") %>
   </body>

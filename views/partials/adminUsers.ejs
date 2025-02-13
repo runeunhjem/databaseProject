@@ -4,27 +4,31 @@
     <thead>
       <tr>
         <th>ID</th>
-        <th>Full Name</th>
-        <th>Email</th>
-        <th>Role</th>
+        <th class="text-start">Full Name</th>
+        <th class="text-start">Email</th>
+        <th class="text-start">Role</th>
         <th>Reservations</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
       <% users.forEach(user => { %>
-        <tr>
-          <td><%= user.id %></td>
-          <td><%= user.firstName %> <%= user.lastName %></td>
-          <td><%= user.email %></td>
-          <td><%= user.role %></td>
-          <td><a href="/users/<%= user.id %>" class="btn btn-info btn-sm">View</a></td>
-          <td>
-            <% if (user.role !== 'Admin') { %>
-              <button class="btn btn-danger btn-sm delete-user" data-id="<%= user.id %>">🗑️</button>
-            <% } %>
-          </td>
-        </tr>
+      <tr>
+        <td><%= user.id %></td>
+        <td class="text-start"><%= user.firstName %> <%= user.lastName %></td>
+        <td class="text-start"><%= user.email %></td>
+        <td class="text-start"><%= user.role %></td>
+        <td>
+          <a href="/users/<%= user.id %>" class="btn btn-info btn-sm view"><i class="bi bi-eye"></i> View</a>
+        </td>
+        <td>
+          <% if (user.role !== 'Admin') { %>
+          <button class="btn btn-danger btn-sm delete-user" data-id="<%= user.id %>">
+            <i class="bi bi-trash"></i>
+          </button>
+          <% } %>
+        </td>
+      </tr>
       <% }); %>
     </tbody>
   </table>

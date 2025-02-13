@@ -1,50 +1,43 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container d-flex justify-content-between align-items-start">
-
+  <div class="container d-flex justify-content-between align-items-center">
     <!-- Left Side: Hotel Booking -->
-    <div>
-      <a class="navbar-brand" href="/">Hotel Booking</a>
-    </div>
+    <a class="navbar-brand" href="/">Hotel Booking</a>
 
     <!-- Right Side: Hi, USER above Navbar Links -->
-    <div class="d-flex flex-column align-items-end">
-
+    <div class="d-flex flex-column text-end">
       <% if (user) { %>
-        <div class="text-light text-end mb-1 me-2">Hi, <%= user.firstName %>!</div>
+      <div class="text-light mb-1 me-0 me-lg-4">Hi, <%= user.firstName %>!</div>
       <% } %>
 
-      <!-- Navbar -->
-      <div class="d-flex align-items-center">
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+      <!-- Burger Menu & Navbar Links -->
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="/hotels">Hotels</a></li>
-            <li class="nav-item"><a class="nav-link" href="/rooms">Rooms</a></li>
+      <div class="collapse navbar-collapse w-100 text-center" id="navbarNav">
+        <ul class="container navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/hotels">Hotels</a></li>
+          <li class="nav-item"><a class="nav-link" href="/rooms">Rooms</a></li>
 
-            <% if (user) { %>
-              <li class="nav-item"><a class="nav-link" href="/users/<%= user.id %>">My Reservations</a></li>
-              <% if (user.role === 'Admin') { %>
-                <li class="nav-item"><a class="nav-link text-warning" href="/admin">Admin Panel</a></li>
-              <% } %>
-              <li class="nav-item"><a class="nav-link text-danger" href="/auth/logout">Logout</a></li>
-            <% } else { %>
-              <li class="nav-item"><a class="nav-link" href="/auth/login">Login</a></li>
-              <li class="nav-item"><a class="nav-link" href="/auth/signup">Sign Up</a></li>
-            <% } %>
-          </ul>
-        </div>
+          <% if (user) { %>
+          <li class="nav-item"><a class="nav-link" href="/users/<%= user.id %>">My Reservations</a></li>
+          <% if (user.role === 'Admin') { %>
+          <li class="nav-item"><a class="nav-link text-warning panel" href="/admin">Admin Panel</a></li>
+          <% } %>
+          <li class="nav-item"><a class="nav-link text-danger logout" href="/auth/logout">Logout</a></li>
+          <% } else { %>
+          <li class="nav-item"><a class="nav-link" href="/auth/login">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="/auth/signup">Sign Up</a></li>
+          <% } %>
+        </ul>
       </div>
-
     </div>
   </div>
 </nav>

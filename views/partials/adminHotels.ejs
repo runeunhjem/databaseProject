@@ -4,25 +4,37 @@
     <thead>
       <tr>
         <th>ID</th>
-        <th>Hotel Name</th>
-        <th>Location</th>
-        <th>Average Rating</th>
+        <th class="text-start">Hotel Name</th>
+        <th class="text-start">Location</th>
+        <th class="text-start">Average Rating</th>
         <th>Reservations</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
       <% hotels.forEach(hotel => { %>
-        <tr>
-          <td><%= hotel.id %></td>
-          <td><%= hotel.name %></td>
-          <td><%= hotel.location %></td>
-          <td><%= hotel.avgRating %></td>
-          <td><a href="/hotels/<%= hotel.id %>" class="btn btn-info btn-sm">View</a></td>
-          <td>
-            <button class="btn btn-danger btn-sm delete-hotel" data-id="<%= hotel.id %>">🗑️</button>
-          </td>
-        </tr>
+      <tr>
+        <td><%= hotel.id %></td>
+        <td class="text-start"><%= hotel.name %></td>
+        <td class="text-start"><%= hotel.location %></td>
+        <td class="text-start">
+          <% if (hotel.avgRating === "No ratings yet") { %>
+            <span class="text-light">No ratings yet</span>
+          <% } else { %>
+            <%= hotel.avgRating %> <i class="bi bi-star-fill text-warning"></i>
+          <% } %>
+        </td>
+        <td>
+          <a href="/hotels/<%= hotel.id %>" class="btn btn-info btn-sm view">
+            <i class="bi bi-eye"></i> View
+          </a>
+        </td>
+        <td>
+          <button class="btn btn-danger btn-sm delete-hotel" data-id="<%= hotel.id %>">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
       <% }); %>
     </tbody>
   </table>

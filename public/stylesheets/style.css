@@ -24,11 +24,36 @@ body {
   background-color: #2c2c2c !important;
 }
 
+.panel:hover, .logout:hover {
+  color: #f8f9fa !important;
+}
+
 .navbar-brand {
   display: flex;
   font-size: 2.5rem;
   align-items: center;
 }
+
+/* Ensure navbar dropdown opens below the burger icon */
+@media (max-width: 991px) {
+  .navbar-collapse {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #343a40; /* Dark background like navbar */
+    z-index: 1000;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px 0;
+  }
+
+  .navbar-collapse .nav-link {
+    padding: 10px;
+    /* margin-right: 3em; */
+    text-align: right;
+  }
+}
+
 
 /* ✅ Card Styling */
 .card {
@@ -113,3 +138,27 @@ body {
   text-decoration: none;
 }
 
+/* ✅ Custom Scrollbar for WebKit Browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 12px;  /* Adjust scrollbar width */
+}
+
+::-webkit-scrollbar-track {
+  background-color: #2c2c2c; /* Background matches the admin panel */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #5d4037; /* Brown thumb color */
+  border-radius: 10px; /* Smooth corners */
+  border: 3px solid #2c2c2c; /* Matches the background for a clean effect */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #886447; /* Lighter brown on hover */
+}
+
+/* ✅ Custom Scrollbar for Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #5d4037 #2c2c2c; /* Thumb | Track */
+}

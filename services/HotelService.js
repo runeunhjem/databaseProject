@@ -25,9 +25,16 @@ class HotelService {
   // ✅ Get all hotels using raw SQL
   async get() {
     try {
-      return await sequelize.query("SELECT * FROM Hotels", {
-        type: QueryTypes.SELECT,
-      });
+      return await sequelize.query(
+        `SELECT h.id, h.name, h.location,
+        COALESCE(ROUND(AVG(r.rating), 1), 'No ratings yet') AS avgRating
+        FROM Hotels h
+        LEFT JOIN Ratings r ON h.id = r.hotel_id
+        GROUP BY h.id`,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
     } catch (err) {
       console.error("Error fetching hotels:", err);
       return [];
@@ -107,7 +114,7 @@ class HotelService {
     try {
       return await sequelize.query(
         `INSERT INTO Ratings (rating, hotel_id, user_id)
-          VALUES (:value, :hotelId, :userId)`,
+        VALUES (:value, :hotelId, :userId)`,
         {
           replacements: { userId, hotelId, value },
         }
