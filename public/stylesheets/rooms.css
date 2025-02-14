@@ -5,19 +5,25 @@
   justify-content: center;
   gap: 15px;
   margin-top: 20px;
+  width: 100%;
 }
 
 /* ✅ Room Card Styling */
 .room-card {
-  width: 320px;
-  background-color: #5d4037; /* Dark Brown */
-  padding: 15px;
-  border-radius: 8px;
-  margin: 10px 0;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  background-color: #343a40; /* Dark theme */
+  border-radius: 12px; /* ✅ Rounded corners */
+  padding: 20px;
+  min-width: 320px;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease-in-out;
+}
+
+.room-card:hover {
+  transform: scale(1.03);
 }
 
 /* ✅ Highlight reserved rooms */
@@ -48,7 +54,7 @@
   font-size: 20px;
   font-weight: bold;
   font-style: italic;
-  color: #b6939a;
+  color: #ffcc00;
 }
 
 .room-info {

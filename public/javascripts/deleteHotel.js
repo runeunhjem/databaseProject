@@ -1,12 +1,17 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const deleteButtons = document.querySelectorAll(".delete-hotel");
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("✅ deleteHotel.js loaded");
 
-  if (!deleteButtons.length) return; // ✅ Exit script if no delete buttons exist
+  document.querySelectorAll(".delete-hotel").forEach((button) => {
+    button.addEventListener("click", async function () {
+      const hotelId = this.getAttribute("data-id");
 
-  deleteButtons.forEach((button) => {
-    button.addEventListener("click", async (event) => {
-      const hotelId = event.target.getAttribute("data-id");
-      if (!confirm("Are you sure you want to delete this hotel?")) return;
+      if (!hotelId) {
+        alert("❌ Hotel ID missing.");
+        return;
+      }
+
+      const confirmDelete = confirm("Are you sure you want to delete this hotel?");
+      if (!confirmDelete) return;
 
       try {
         const response = await fetch("/hotels", {
@@ -15,12 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify({ id: hotelId }),
         });
 
-        if (!response.ok) throw new Error(await response.text());
+        const result = await response.text();
+        if (!response.ok) throw new Error(result);
 
         alert("✅ Hotel deleted successfully!");
         window.location.reload();
       } catch (error) {
-        alert("❌ Something went wrong.");
+        console.error("❌ Error deleting hotel:", error);
+        alert("❌ Failed to delete hotel.");
       }
     });
   });

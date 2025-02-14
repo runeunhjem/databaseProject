@@ -1,8 +1,8 @@
-h1 {
+/* h1 {
   text-align: center;
   margin-top: 50px;
   color: #f8f9fa;
-}
+} */
 /* ✅ Logged-in User Box */
 .logged-in-box {
   max-width: 400px;
@@ -74,8 +74,9 @@ h1 {
 }
 
 a {
-  color: #f8f9fa;
-  text-decoration: none;
+  color: #f0d540;
+  text-decoration: underline;
+  transition: all 0.3s ease;
 }
 
 a:hover {

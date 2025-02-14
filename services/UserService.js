@@ -138,6 +138,20 @@ class UserService {
       return { success: false, message: "Internal error deleting user." };
     }
   }
+
+  // ✅ Find user by ID for session storage
+  async findUserById(userId) {
+    try {
+      const user = await this.User.findOne({
+        where: { id: userId },
+        attributes: ["id", "username", "firstName", "lastName", "email", "role"],
+      });
+      return user;
+    } catch (error) {
+      console.error("❌ Error finding user by ID:", error);
+      return null;
+    }
+  }
 }
 
 module.exports = UserService;

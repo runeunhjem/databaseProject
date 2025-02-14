@@ -36,8 +36,9 @@
 }
 
 a {
-  color: #f8f9fa;
-  text-decoration: none;
+  color: #f0d540;
+  text-decoration: underline;
+  transition: all 0.3s ease;
 }
 
 a:hover {

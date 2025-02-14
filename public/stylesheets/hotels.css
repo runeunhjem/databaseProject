@@ -3,78 +3,123 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 60%;
+  width: 100%;
+  margin: auto;
 }
 
 /* ✅ Hotel List Styling */
 .hotel-list {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 20px;
   margin-top: 20px;
-  width: 100%;
 }
 
-/* ✅ Hotel Card Styling */
+/* ✅ Hotel Card Styling (Consistent with Rooms & Hotel Details) */
 .hotel-card {
-  width: 100%;
-  background-color: #5d4037; /* Dark Brown */
-  padding: 15px;
-  border-radius: 8px;
-  margin: 10px 0;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  background-color: #343a40; /* Dark theme */
+  border-radius: 12px; /* ✅ Rounded corners */
+  padding: 20px;
+  min-width: 320px;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease-in-out;
 }
 
-/* ✅ Aligns Name & Location with Buttons */
+.hotel-card:hover {
+  transform: scale(1.03);
+}
+
+/* ✅ Hotel Name & Location */
 .hotel-info {
   width: 100%;
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 30px;
-  font-size: 18px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.hotel-name {
+  font-size: 1.5rem;
   font-weight: bold;
   color: #f8f9fa;
 }
 
-/* ✅ Buttons Row (Same Width) */
-.hotel-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  width: 100%;
-  padding: 10px 20px;
+.hotel-location {
+  font-size: 1rem;
+  color: #b0bec5; /* Lighter grey for contrast */
 }
 
-/* ✅ Equal Button Sizes */
+/* ✅ Buttons Section */
+.hotel-actions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+/* ✅ Button Styling */
 .hotel-actions a,
 .hotel-actions button {
   flex: 1;
-  margin: 5px 5px;
   text-align: center;
   padding: 10px;
   border-radius: 8px;
   font-size: 14px;
   text-decoration: none;
-  align-self: center;
-  white-space: nowrap;
+  font-weight: bold;
 }
 
-/* ✅ Add Hotel Button is now centered BELOW the cards */
-.add-hotel-container {
-  display: flex;
-  justify-content: right;
-  width: 100%;
-  margin-top: 20px;
+/* ✅ Primary Action Button (Rent a Room) */
+.btn-primary {
+  background-color: #8b4513; /* Cocoa Brown */
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #a0522d;
+}
+
+/* ✅ Secondary Action Button (Details) */
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+/* ✅ Danger Action Button (Delete) */
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
 }
 
 /* ✅ Add Hotel Button */
+.add-hotel-container {
+  margin-top: 30px;
+}
+
 .add-hotel-btn {
-  max-width: 200px;
-  text-align: center;
+  background-color: #28a745;
+  border: none;
   padding: 12px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: white;
+  transition: 0.3s;
   border-radius: 8px;
-  font-size: 16px;
+}
+
+.add-hotel-btn:hover {
+  background-color: #218838;
 }

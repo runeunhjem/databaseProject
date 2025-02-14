@@ -4,3 +4,8 @@
     <a href="https://rundev-portfolio.netlify.app/" target="_blank" aria-label="Visit RUN/DEV">RUN/DEV</a>
   </p>
 </footer>
+
+<!-- 🔹 Hidden user ID field for JavaScript -->
+<% if (user) { %>
+  <input type="hidden" id="user-id" value="<%= user.id %>">
+<% } %>

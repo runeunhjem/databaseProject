@@ -11,14 +11,45 @@ class HotelService {
   }
 
   // ✅ Create a hotel using raw SQL
-  async create(name, location) {
+  async create(name, location, rooms) {
+    const transaction = await sequelize.transaction(); // ✅ Start a transaction
+
     try {
-      return await sequelize.query("INSERT INTO Hotels (name, location) VALUES (:name, :location)", {
+      // ✅ Insert the hotel first
+      const [result] = await sequelize.query("INSERT INTO Hotels (name, location) VALUES (:name, :location)", {
         replacements: { name, location },
+        type: QueryTypes.INSERT,
+        transaction, // ✅ Transaction ensures data integrity
       });
+
+      const hotelId = result; // ✅ Get the ID of the newly created hotel
+
+      if (!hotelId) {
+        throw new Error("Hotel creation failed. No hotel ID returned.");
+      }
+
+      console.log("✅ Hotel created with ID:", hotelId);
+
+      // ✅ Insert each room associated with the hotel
+      for (const room of rooms) {
+        await sequelize.query("INSERT INTO Rooms (hotel_id, capacity, price) VALUES (:hotelId, :capacity, :price)", {
+          replacements: {
+            hotelId,
+            capacity: room.capacity,
+            price: room.price,
+          },
+          type: QueryTypes.INSERT,
+          transaction,
+        });
+        console.log(`✅ Room added: Capacity ${room.capacity}, Price $${room.price}`);
+      }
+
+      await transaction.commit(); // ✅ Commit the transaction if everything succeeds
+      return { success: true, message: "Hotel and rooms created successfully!" };
     } catch (err) {
-      console.error("Error creating hotel:", err);
-      return err;
+      await transaction.rollback(); // ❌ Rollback if an error occurs
+      console.error("❌ Error creating hotel and rooms:", err);
+      return { success: false, message: "Failed to create hotel and rooms." };
     }
   }
 

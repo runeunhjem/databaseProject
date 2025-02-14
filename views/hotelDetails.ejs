@@ -4,50 +4,68 @@
   <body class="d-flex flex-column min-vh-100">
     <%- include("partials/navbar") %>
 
-    <div class="container text-center mt-5">
-      <h1 class="page-title"><%= hotel.name %></h1>
-      <p class="hotel-location">Location: <strong><%= hotel.location %></strong></p>
+    <div class="container mt-5 hotel-details">
+      <div class="hotel-header text-center">
+        <h1 class="page-title"><%= hotel.name %></h1>
+        <p class="hotel-location"><i class="bi bi-geo-alt-fill"></i> <strong><%= hotel.location %></strong></p>
+      </div>
 
-      <h2 class="rating">Rating: <%= hotel.avgRating %></h2>
-      <% if (user) { %> <% if (!hotel.rated) { %>
-      <button onclick="makeRate('<%= user.id %>', '/hotels/<%= hotel.id %>/rate')" class="btn btn-success">
-        Rate this hotel
-      </button>
-      <% } %> <% } %>
+      <div class="hotel-info">
+        <h2 class="rating text-warning"><i class="bi bi-star-fill"></i> <%= hotel.avgRating %> / 5</h2>
 
-      <!-- ✅ New Wrapper for Rooms & Button -->
-      <div class="room-wrapper">
-        <h3 class="mt-4">Available Rooms</h3>
+        <% if (user && !hotel.rated) { %>
+          <button onclick="makeRate('<%= user.id %>', '/hotels/<%= hotel.id %>/rate')" class="btn btn-success">
+            <i class="bi bi-hand-thumbs-up-fill"></i> Rate this hotel
+          </button>
+        <% } %>
+      </div>
+
+      <!-- ✅ Room Section -->
+      <div class="room-section">
+        <h3 class="text-light mt-4">Available Rooms</h3>
         <div class="room-list">
           <% hotel.Rooms.forEach(room => { %>
-          <div class="room-card <%= room.is_reserved ? 'reserved-room' : '' %>">
-            <div class="room-info">
-              <h4><%= room.room_type %></h4>
-              <p>Capacity: <strong><%= room.max_capacity %></strong></p>
-              <p>Price: <strong>$<%= room.price %> per night</strong></p>
-            </div>
+            <div class="room-card <%= room.is_reserved ? 'reserved-room' : '' %>">
+              <div class="room-info">
+                <h4 class="room-title"><%= room.room_type %></h4>
+                <p><i class="bi bi-people-fill"></i> Capacity: <strong><%= room.max_capacity %> people</strong></p>
+                <p><i class="bi bi-cash-stack"></i> Price: <strong>$<%= room.price %> per night</strong></p>
+              </div>
 
-            <% if (room.is_reserved) { %>
-            <p class="reservation-notice">✔️ You already have a reservation here</p>
-            <% } else { %>
-            <p class="reservation-placeholder">Room is available</p>
-            <% } %>
-
-            <div class="room-actions">
-              <% if (user) { %> <% if (!room.is_reserved) { %>
-              <button class="btn-primary rent-room" data-id="<%= room.id %>">Rent</button>
+              <% if (room.is_reserved) { %>
+                <p class="text-warning reservation-notice text-success">You have booked this!</p>
               <% } else { %>
-              <a href="/users/<%= user.id %>" class="btn-warning">Reservations</a>
-              <% } %> <% } %>
+                <p class="reservation-placeholder text-light">✅ Room is available</p>
+              <% } %>
+
+              <!-- ✅ Room Actions (Added "View Room") -->
+              <div class="room-actions">
+                <a href="/rooms/<%= room.id %>" class="btn btn-secondary">
+                  <i class="bi bi-eye"></i> View Room
+                </a>
+
+                <% if (user) { %>
+                  <% if (!room.is_reserved) { %>
+                    <button class="btn btn-primary rent-room" data-id="<%= room.id %>">
+                      <i class="bi bi-calendar-plus"></i> Rent This Room
+                    </button>
+                  <% } else { %>
+                    <a href="/users/<%= user.id %>" class="btn btn-warning">
+                      <i class="bi bi-bookmark-check"></i> My Reservations
+                    </a>
+                  <% } %>
+                <% } %>
+              </div>
             </div>
-          </div>
           <% }); %>
         </div>
 
         <% if (user && user.role === 'Admin') { %>
-        <div class="add-room-container">
-          <button id="add-room" class="btn-primary add-room-btn">+ Add Room</button>
-        </div>
+          <div class="add-room-container">
+            <button id="add-room" class="btn btn-success add-room-btn">
+              <i class="bi bi-plus-circle"></i> Add Room
+            </button>
+          </div>
         <% } %>
       </div>
     </div>
@@ -69,6 +87,7 @@
       </div>
     </div>
 
+    <!-- ✅ Scripts -->
     <script src="/javascripts/makeReservation.js"></script>
     <script src="/javascripts/addRoom.js"></script>
     <script src="/javascripts/makeRate.js"></script>

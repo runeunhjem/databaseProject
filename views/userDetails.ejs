@@ -13,11 +13,11 @@
         <table class="table reservation-table">
           <thead>
             <tr>
-              <th>Hotel Name</th>
-              <th>Location</th>
-              <th>Room Type</th>
-              <th>Capacity</th>
-              <th>Price</th>
+              <th class="text-start">Hotel Name</th>
+              <th class="text-start">Location</th>
+              <th class="text-start">Room Type</th>
+              <th class="center">Capacity</th>
+              <th class="center">Price</th>
               <th>Check-in</th>
               <th>Check-out</th>
               <th>Action</th>
@@ -27,17 +27,17 @@
             <% user.reservations.forEach(reservation => { %>
             <tr>
               <!-- ✅ Clickable Hotel Name -->
-              <td>
+              <td class="text-start">
                 <a href="/hotels/<%= reservation.hotel_id %>" class="hotel-link">
                   <%= reservation.hotelName %>
                 </a>
               </td>
-              <td><%= reservation.hotelLocation %></td>
-              <td><%= reservation.room_type %></td>
+              <td class="text-start"><%= reservation.hotelLocation %></td>
+              <td class="text-start"><%= reservation.room_type %></td>
               <td class="center"><%= reservation.max_capacity %></td>
-              <td class="price"><strong>$<%= reservation.price %></strong></td>
-              <td><%= new Date(reservation.rentFrom).toLocaleDateString() %></td>
-              <td><%= new Date(reservation.rentTo).toLocaleDateString() %></td>
+              <td class="center"><strong>$<%= reservation.price %></strong></td>
+              <td class="center"><%= new Date(reservation.rentFrom).toLocaleDateString() %></td>
+              <td class="center"><%= new Date(reservation.rentTo).toLocaleDateString() %></td>
               <td class="center">
                 <button class="btn btn-danger delete-reservation" data-id="<%= reservation.reservation_id %>">
                   Cancel
@@ -54,7 +54,7 @@
     </div>
 
     <%- include("partials/footer") %>
-    
+
     <!-- Back to Top Button -->
     <button id="backToTop" class="back-to-top btn btn-warning">
       <i class="bi bi-arrow-up-circle-fill"></i>

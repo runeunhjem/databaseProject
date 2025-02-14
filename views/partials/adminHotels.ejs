@@ -7,6 +7,7 @@
         <th class="text-start">Hotel Name</th>
         <th class="text-start">Location</th>
         <th class="text-start">Average Rating</th>
+        <th>Hotel Details</th>
         <th>Reservations</th>
         <th>Action</th>
       </tr>
@@ -19,20 +20,21 @@
         <td class="text-start"><%= hotel.location %></td>
         <td class="text-start">
           <% if (hotel.avgRating === "No ratings yet") { %>
-            <span class="text-light">No ratings yet</span>
-          <% } else { %>
-            <%= hotel.avgRating %> <i class="bi bi-star-fill text-warning"></i>
+          <span class="text-light">No ratings yet</span>
+          <% } else { %> <%= hotel.avgRating %> <i class="bi bi-star-fill text-warning"></i>
           <% } %>
         </td>
         <td>
-          <a href="/hotels/<%= hotel.id %>" class="btn btn-info btn-sm view">
-            <i class="bi bi-eye"></i> View
-          </a>
+          <a href="/hotels/<%= hotel.id %>" class="btn btn-info btn-sm view"><i class="bi bi-eye"></i> View </a>
         </td>
+        <td><a href="/hotels/<%= hotel.id %>/reservations" class="btn btn-info btn-sm view"><i class="bi bi-eye"></i> View Reservations </a></td>
+
         <td>
+          <% if (user.role === 'Admin') { %>
           <button class="btn btn-danger btn-sm delete-hotel" data-id="<%= hotel.id %>">
             <i class="bi bi-trash"></i>
           </button>
+          <% } %>
         </td>
       </tr>
       <% }); %>

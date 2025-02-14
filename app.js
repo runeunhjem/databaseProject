@@ -7,6 +7,7 @@ var db = require("./models");
 const session = require("express-session");
 const passport = require("./config/passport");
 const SQLiteStore = require("connect-sqlite3")(session);
+const flash = require("connect-flash");
 
 var app = express(); // ✅ Ensure `app` is defined before using it
 
@@ -41,6 +42,9 @@ app.use((req, res, next) => {
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
+// ✅ After session middleware
+app.use(flash());
+
 // ✅ Logging
 app.use(logger(process.env.NODE_ENV === "development" ? "dev" : "combined"));
 
@@ -55,7 +59,6 @@ app.use("/rooms", require("./routes/rooms"));
 app.use("/reservations", require("./routes/reservations"));
 app.use("/auth", require("./routes/auth")); // ✅ Keep auth route last for clarity
 app.use("/admin", adminRouter); // ✅ Register the admin route
-
 
 // ✅ Database Sync
 db.sequelize
@@ -83,7 +86,19 @@ app.use((err, req, res, next) => {
   });
 });
 
+// ✅ Make flash messages available globally
+app.use((req, res, next) => {
+  res.locals.messages = {
+    success: req.flash("success"),
+    error: req.flash("error"),
+  };
+  next();
+});
+
 module.exports = app;
+
+
+
 
 
 

@@ -77,21 +77,22 @@ class RoomService {
     try {
       return await sequelize.query(
         `SELECT r.*, h.name AS hotel_name, h.location AS hotel_location, h.id AS hotel_id,
-          CASE
-            WHEN r.capacity = 2 THEN 'Double Room'
-            WHEN r.capacity = 4 THEN 'Family Room'
-            WHEN r.capacity = 5 THEN 'Junior Suite'
-            WHEN r.capacity > 5 THEN 'Suite'
-            ELSE CONCAT('Room for ', r.capacity, ' people')
-          END AS room_type,
-          r.capacity AS max_capacity,
-          CASE
-            WHEN EXISTS (SELECT 1 FROM Reservations WHERE room_id = r.id AND user_id = :userId)
-            THEN 1 ELSE 0
-          END AS is_reserved
-          FROM Rooms r
-          JOIN Hotels h ON r.hotel_id = h.id
-          WHERE r.hotel_id = :hotelId`,
+        CASE
+          WHEN r.capacity = 2 THEN 'Double Room'
+          WHEN r.capacity = 4 THEN 'Family Room'
+          WHEN r.capacity = 5 THEN 'Junior Suite'
+          WHEN r.capacity > 5 THEN 'Suite'
+          ELSE CONCAT('Room for ', r.capacity, ' people')
+        END AS room_type,
+        r.capacity AS max_capacity,
+        CASE
+          WHEN EXISTS (SELECT 1 FROM Reservations WHERE room_id = r.id AND user_id = :userId)
+          THEN 1 ELSE 0
+        END AS is_reserved
+        FROM Rooms r
+        JOIN Hotels h ON r.hotel_id = h.id
+        WHERE r.hotel_id = :hotelId
+        ORDER BY r.capacity ASC, r.price ASC`,
         {
           replacements: { hotelId, userId },
           type: QueryTypes.SELECT,
@@ -147,25 +148,57 @@ class RoomService {
   }
 
   // ✅ Get specific room details
-  async getRoomDetails(roomId, userId) {
+  async getRoomDetails(roomId) {
     try {
       const room = await sequelize.query(
-        `SELECT r.id, r.capacity, r.price, h.id AS hotelId, h.name AS hotelName, h.location
-        FROM Rooms r
-        JOIN Hotels h ON r.hotel_id = h.id
-        WHERE r.id = :roomId`,
+        `SELECT r.id, r.capacity, r.price, h.id AS hotelId, h.name AS hotelName, h.location,
+        CASE
+          WHEN r.capacity = 2 THEN 'Double Room'
+          WHEN r.capacity = 4 THEN 'Family Room'
+          WHEN r.capacity = 5 THEN 'Junior Suite'
+          WHEN r.capacity > 5 THEN 'Suite'
+          ELSE CONCAT('Room for ', r.capacity, ' people')
+        END AS room_type
+      FROM Rooms r
+      JOIN Hotels h ON r.hotel_id = h.id
+      WHERE r.id = :roomId`,
         {
           replacements: { roomId },
           type: QueryTypes.SELECT,
         }
       );
 
-      if (!room.length) return null; // If no room is found, return null
+      if (!room.length) return null;
 
-      return room[0]; // Return the first matching result
+      return room[0]; // ✅ Ensure it returns an object
     } catch (err) {
       console.error("❌ Error fetching room details:", err);
       throw err;
+    }
+  }
+
+  async getReservationsByHotel(hotelId) {
+    try {
+      return await sequelize.query(
+        `SELECT r.id AS reservationId,
+          u.firstName, u.lastName, u.email,
+          ro.id AS roomId, ro.capacity AS roomCapacity, ro.price AS roomPrice,
+          DATE_FORMAT(r.start_date, '%d-%m-%Y') AS startDate,
+          DATE_FORMAT(r.end_date, '%d-%m-%Y') AS endDate,
+          (DATEDIFF(r.end_date, r.start_date) * ro.price) AS totalPrice
+        FROM Reservations r
+        JOIN Users u ON r.user_id = u.id
+        JOIN Rooms ro ON r.room_id = ro.id
+        WHERE ro.hotel_id = :hotelId
+        ORDER BY r.start_date DESC`,
+        {
+          replacements: { hotelId },
+          type: QueryTypes.SELECT,
+        }
+      );
+    } catch (err) {
+      console.error("❌ Error fetching reservations for hotel:", err);
+      return [];
     }
   }
 }

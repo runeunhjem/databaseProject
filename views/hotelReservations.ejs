@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head") %>
+  <body>
+    <%- include("partials/navbar") %>
+
+    <div class="container text-center mt-5">
+      <div class="admin-section">
+        <h1 class="text-light">Hotel Reservations</h1>
+        <% if (message) { %>
+        <p class="text-warning"><%= message %></p>
+        <% } else { %>
+        <table class="table table-striped table-dark">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th class="text-start">User</th>
+              <th class="text-start">Email</th>
+              <th>Room</th>
+              <th>Capacity</th>
+              <th>Price</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Total Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% reservations.forEach(reservation => { %>
+            <tr>
+              <td><%= reservation.reservationId %></td>
+              <td class="text-start"><%= reservation.firstName %> <%= reservation.lastName %></td>
+              <td class="text-start"><%= reservation.email %></td>
+              <td><%= reservation.roomId %></td>
+              <td><%= reservation.roomCapacity %></td>
+              <td>$<%= reservation.roomPrice %></td>
+              <td><%= reservation.startDate %></td>
+              <td><%= reservation.endDate %></td>
+              <td>$<%= reservation.totalPrice %></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+        <% } %>
+      </div>
+    </div>
+
+    <%- include("partials/footer") %>
+  </body>
+</html>

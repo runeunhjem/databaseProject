@@ -24,7 +24,8 @@ body {
   background-color: #2c2c2c !important;
 }
 
-.panel:hover, .logout:hover {
+.panel:hover,
+.logout:hover {
   color: #f8f9fa !important;
 }
 
@@ -53,7 +54,6 @@ body {
     text-align: right;
   }
 }
-
 
 /* ✅ Card Styling */
 .card {
@@ -140,7 +140,7 @@ body {
 
 /* ✅ Custom Scrollbar for WebKit Browsers (Chrome, Edge, Safari) */
 ::-webkit-scrollbar {
-  width: 12px;  /* Adjust scrollbar width */
+  width: 12px; /* Adjust scrollbar width */
 }
 
 ::-webkit-scrollbar-track {
@@ -290,3 +290,4 @@ input[type="date"] {
   color: #ecbf2d;
   scale: 1.1;
 }
+

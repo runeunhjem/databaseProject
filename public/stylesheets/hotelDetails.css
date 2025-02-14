@@ -1,154 +1,107 @@
-/* ✅ General Styling */
-body {
-  margin: 0;
-  padding: 0;
+/* 📌 General Styling */
+.hotel-details {
+  background-color: #212529;
+  color: white;
+  padding: 30px;
+  border-radius: 12px; /* ✅ Rounded corners */
+  max-width: 1200px; /* ✅ Keep it nicely centered */
+  margin: auto; /* ✅ Centers the container */
+  box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.1);
 }
 
-/* ✅ Titles & Location */
-.page-title, .hotel-location {
+.hotel-header h1 {
+  font-size: 2.5rem;
   color: #f8f9fa;
-  text-align: center;
 }
 
-.page-title {
-  color: #1b1a1a; /* Dark Brown */
-}
-
+/* 📌 Location */
 .hotel-location {
-  font-size: 18px;
+  font-size: 1.2rem;
+  color: #f8f9fa;
 }
 
-/* ✅ Hotel Rating */
+/* 📌 Center Rating */
 .rating {
-  font-size: 20px;
-  font-weight: bold;
-  color: #ffcc00; /* Gold */
+  font-size: 1.5rem;
+  margin: 15px auto; /* ✅ Centers the rating */
   text-align: center;
 }
 
-/* ✅ Rate Hotel Button */
-.rate-btn {
-  margin-top: 10px;
-  padding: 12px 20px;
-  font-size: 16px;
+/* 📌 Rating Icon Color */
+.rating i {
+  color: #ffc107;
 }
 
-/* ✅ New Room Wrapper (Centers Everything) */
-.room-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  margin-top: 20px;
+/* 📌 Room Section */
+.room-section {
+  margin-top: 40px;
+  text-align: center; /* ✅ Centers the heading */
 }
 
-/* ✅ Room List */
+.room-section h3 {
+  font-size: 1.8rem;
+  color: #f8f9fa;
+  text-align: center; /* ✅ Centers the heading */
+}
+
+/* 📌 Room List */
 .room-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 15px;
-  margin-top: 20px;
-  width: 100%;
+  gap: 20px;
 }
 
-/* ✅ Room Card */
+/* 📌 Room Cards */
 .room-card {
-  width: 320px;
-  background-color: #5d4037; /* Dark Brown */
-  padding: 15px;
-  border-radius: 8px;
-  margin: 10px 0;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background-color: #343a40;
+  border-radius: 8px; /* ✅ Rounded corners */
+  padding: 20px;
+  width: 300px;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
 }
 
-/* ✅ Highlight reserved rooms */
+/* 📌 Room Title */
+.room-title {
+  font-size: 1.3rem;
+  color: #f8f9fa;
+}
+
+/* 📌 Reserved Room Styling */
 .reserved-room {
-  background-color: #384138 !important; /* Dark Green */
+  background-color: rgba(255, 81, 0, 0.2);
+  border-left: 2px solid red;
 }
 
-/* ✅ Reservation Notice */
-.reservation-notice, .reservation-placeholder {
-  color: #ffd700; /* Gold */
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 8px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ✅ Placeholder for consistent height */
-.reservation-placeholder {
-  color: #f8f9fa;
-}
-
-/* ✅ Room Info */
-.room-info {
-  text-align: center;
-  color: #f8f9fa;
-}
-
-.room-hotel {
-  font-size: 20px;
-  font-weight: bold;
-  font-style: italic;
-  color: #b6939a;
-}
-
-/* ✅ Buttons Row */
+/* 📌 Room Actions */
 .room-actions {
-  display: flex;
-  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 10px;
   width: 100%;
-  padding: 10px 15px;
+  font-size: 1rem;
 }
 
-.room-actions a, .room-actions button {
-  flex: 1;
-  margin: 0 5px;
-  text-align: center;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 14px;
-  text-decoration: none;
-}
-
-/* ✅ Button Styles */
-.btn-primary {
-  background-color: #8b4513; /* Cocoa Brown */
-  border: none;
-}
-
-.btn-primary:hover {
-  background-color: #a0522d;
-}
-
-.btn-warning {
-  background-color: #ffcc00; /* Gold */
-  color: black;
-}
-
-.btn-warning:hover {
-  background-color: #e6b800;
-}
-
-/* ✅ Add Room Button Styling */
+/* 📌 Add Room Button */
 .add-room-container {
-  display: flex;
-  justify-content: center;
-  width: 100%;
   margin-top: 20px;
 }
 
 .add-room-btn {
-  max-width: 200px;
-  text-align: center;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-size: 16px;
+  background-color: #28a745;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: white;
+  transition: 0.3s;
+  border-radius: 8px; /* ✅ Rounded corners */
 }
+
+.add-room-btn:hover {
+  background-color: #218838;
+}
+

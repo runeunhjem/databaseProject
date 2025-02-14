@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head") %>
+  <body class="d-flex flex-column min-vh-100">
+    <%- include("partials/navbar") %>
+
+    <div class="container text-center mt-5">
+      <h1 class="text-light"><%= hotel.name %> - Available Rooms</h1>
+      <p class="text-light"><%= hotel.location %></p>
+
+      <% if (rooms.length > 0) { %>
+        <div class="row mt-4">
+          <% rooms.forEach(room => { %>
+            <div class="col-md-4 mb-4">
+              <div class="card bg-dark text-light p-3 shadow-lg">
+                <div class="card-body">
+                  <h5 class="card-title"><%= room.room_type %></h5>
+                  <p class="card-text"><strong>Capacity:</strong> <%= room.max_capacity %> people</p>
+                  <p class="card-text"><strong>Price:</strong> $<%= room.price %> per night</p>
+
+                  <% if (room.is_reserved) { %>
+                    <span class="badge bg-danger">Already Reserved</span>
+                  <% } else { %>
+                    <% if (user) { %>
+                      <button class="btn btn-primary rent-room" data-id="<%= room.id %>">
+                        <i class="bi bi-door-open"></i> Rent This Room
+                      </button>
+                    <% } %>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <h4 class="text-warning">No rooms available at this hotel.</h4>
+      <% } %>
+    </div>
+
+    <%- include("partials/footer") %>
+  </body>
+</html>

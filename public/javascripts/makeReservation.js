@@ -18,11 +18,11 @@ function setupReservationModal(modal) {
   const startDateInput = document.getElementById("start-date");
   const endDateInput = document.getElementById("end-date");
 
-  if (!confirmButton) return; // ✅ Exit if confirm button is missing
+  if (!confirmButton || !startDateInput || !endDateInput) return; // ✅ Exit if any required input is missing
 
   let selectedRoomId = null;
 
-  // ✅ Prevent selecting past dates
+  // ✅ Function to prevent past dates selection
   function setMinDate() {
     const today = new Date();
     const formattedDate = today.toISOString().split("T")[0];
@@ -31,8 +31,7 @@ function setupReservationModal(modal) {
     endDateInput.setAttribute("min", formattedDate);
   }
 
-  setMinDate(); // ✅ Set min date on page load
-
+  // ✅ Update min date every time the modal opens
   document.querySelectorAll(".rent-room").forEach((button) => {
     button.addEventListener("click", (event) => {
       selectedRoomId = event.target.getAttribute("data-id");
@@ -42,6 +41,7 @@ function setupReservationModal(modal) {
         return;
       }
 
+      setMinDate(); // ✅ Ensure date restrictions are applied before opening modal
       modal.style.display = "flex";
     });
   });
@@ -58,11 +58,11 @@ function setupReservationModal(modal) {
     }
   });
 
+  // ✅ Format date correctly for backend storage
   function formatDateWithTime(dateValue) {
     if (!dateValue) return null;
-    const now = new Date();
     const selectedDate = new Date(dateValue);
-    selectedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+    selectedDate.setHours(12, 0, 0); // ✅ Normalize time to avoid timezone issues
     return selectedDate.toISOString().slice(0, 19).replace("T", " ");
   }
 
@@ -72,9 +72,9 @@ function setupReservationModal(modal) {
       return;
     }
 
-    const startDate = formatDateWithTime(startDateInput.value);
-    const endDate = formatDateWithTime(endDateInput.value);
-    const today = new Date().toISOString().slice(0, 10);
+    const startDate = startDateInput.value;
+    const endDate = endDateInput.value;
+    const today = new Date().toISOString().split("T")[0];
 
     if (!startDate || !endDate) {
       alert("❌ Please select both start and end dates.");
@@ -91,11 +91,21 @@ function setupReservationModal(modal) {
       return;
     }
 
+    const formattedStartDate = formatDateWithTime(startDate);
+    const formattedEndDate = formatDateWithTime(endDate);
+
+    // ✅ Get userId dynamically from the page (if stored in a hidden field)
+    const userId = document.getElementById("user-id")?.value; // Example: <input type="hidden" id="user-id" value="42">
+    if (!userId) {
+      alert("❌ Error: User ID not found. Please log in.");
+      return;
+    }
+
     try {
       const response = await fetch("/rooms/reservation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: 1, roomId: selectedRoomId, startDate, endDate }),
+        body: JSON.stringify({ userId, roomId: selectedRoomId, startDate: formattedStartDate, endDate: formattedEndDate }),
       });
 
       if (!response.ok) throw new Error(await response.text());
@@ -103,7 +113,7 @@ function setupReservationModal(modal) {
       alert("✅ Reservation successful!");
       window.location.reload();
     } catch (error) {
-      alert("❌ Something went wrong.");
+      alert("❌ Something went wrong. Please try again later.");
     }
   });
 }

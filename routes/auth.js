@@ -5,9 +5,16 @@ const db = require("../models");
 const router = express.Router();
 const userService = new UserService(db);
 
-// ✅ Render Signup Page
+// ✅ Render Signup Page (Fix: Pass messages properly)
 router.get("/signup", (req, res) => {
-  res.render("signup", { title: "Sign Up", cssFile: "signup" });
+  res.render("signup", {
+    title: "Sign Up",
+    cssFile: "signup",
+    messages: {
+      success: req.flash("success") || null,
+      error: req.flash("error") || null,
+    },
+  });
 });
 
 // ✅ Render Login Page
@@ -16,33 +23,50 @@ router.get("/login", (req, res) => {
   res.render("login", { title: "Login", cssFile: "login", username });
 });
 
-
-// ✅ Handle Signup Submission
-router.post("/signup", async (req, res) => {
+// ✅ Handle Signup Submission with Auto-login
+router.post("/signup", async (req, res, next) => {
   try {
-    console.log("🔍 Received payload:", req.body);
+    console.log("Received signup payload:", req.body);
 
     const { username, password, firstName, lastName, email } = req.body;
-
     if (!username || !password || !firstName || !lastName || !email) {
-      return res.status(400).json({ message: "❌ All fields are required!" });
+      req.flash("error", "❌ All fields are required!");
+      return res.redirect("/auth/signup");
     }
 
     const userExists = await userService.findUserByUsername(username);
     if (userExists) {
-      return res.status(400).json({ message: "❌ Username already taken." });
+      req.flash("error", "❌ Username is already taken.");
+      return res.redirect("/auth/signup");
     }
 
     const result = await userService.createUser(username, password, firstName, lastName, email);
-
-    if (result.success) {
-      res.redirect("/auth/login");
-    } else {
-      res.status(500).json({ message: result.message });
+    if (!result.success) {
+      req.flash("error", "❌ Failed to create an account.");
+      return res.redirect("/auth/signup");
     }
+
+    // ✅ Find the newly created user
+    const newUser = await userService.findUserByUsername(username);
+    if (!newUser) {
+      req.flash("error", "❌ Signup successful, but failed to login.");
+      return res.redirect("/auth/login");
+    }
+
+    // ✅ Auto-login the new user
+    req.login(newUser, (err) => {
+      if (err) {
+        console.error("❌ Auto-login failed:", err);
+        req.flash("error", "Signup successful, but login failed. Please login manually.");
+        return res.redirect("/auth/login");
+      }
+      req.flash("success", "✅ Welcome! Your account was created successfully.");
+      return res.redirect("/");
+    });
   } catch (error) {
     console.error("❌ Signup Error:", error);
-    res.status(500).json({ message: "❌ Internal Server Error." });
+    req.flash("error", "❌ An error occurred while signing up.");
+    res.redirect("/auth/signup");
   }
 });
 

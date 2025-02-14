@@ -11,16 +11,22 @@
         <% hotels.forEach(hotel => { %>
         <div class="hotel-card">
           <div class="hotel-info">
-            <span class="hotel-name"><%= hotel.name %></span>
-            <span class="hotel-location"><%= hotel.location %></span>
+            <p class="hotel-name"><%= hotel.name %></p>
+            <p class="hotel-location"><i class="bi bi-geo-alt-fill"></i> <%= hotel.location %></p>
           </div>
           <div class="hotel-actions">
             <% if (user) { %>
-            <a href="/rooms/<%= hotel.id %>" class="btn-primary">Rent a Room</a>
+            <a href="/hotels/<%= hotel.id %>/rooms" class="btn btn-primary">
+              <i class="bi bi-key"></i> Rent a Room
+            </a>
             <% } %>
-            <a href="/hotels/<%= hotel.id %>" class="btn-secondary">Details</a>
+            <a href="/hotels/<%= hotel.id %>" class="btn btn-secondary">
+              <i class="bi bi-eye"></i> Details
+            </a>
             <% if (user && user.role === 'Admin') { %>
-            <button class="btn-danger delete-hotel" data-id="<%= hotel.id %>">Delete</button>
+            <button class="btn btn-danger delete-hotel" data-id="<%= hotel.id %>">
+              <i class="bi bi-trash"></i> Delete
+            </button>
             <% } %>
           </div>
         </div>
@@ -30,7 +36,9 @@
       <!-- ✅ Add Hotel Button -->
       <% if (user && user.role === 'Admin') { %>
       <div class="add-hotel-container">
-        <button id="add-hotel" class="btn-primary add-hotel-btn">+ New Hotel</button>
+        <button id="add-hotel" class="btn add-hotel-btn">
+          <i class="bi bi-plus-circle"></i> New Hotel
+        </button>
       </div>
       <% } %>
     </div>

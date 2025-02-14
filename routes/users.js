@@ -46,18 +46,36 @@ router.get("/", canSeeUserList, async function (req, res, next) {
   }
 });
 
-// ✅ DELETE remove a user (Only Admins)
-router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res, next) {
+// ✅ DELETE a user (Only Admins can delete)
+router.delete("/:id", checkIfAdmin, async (req, res) => {
   try {
-    let id = req.body.id;
-    await userService.deleteUser(id);
-    res.send("User deleted successfully.");
+    const userId = req.params.id;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required." });
+    }
+
+    const user = await db.User.findOne({ where: { id: userId } });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    if (user.role === "Admin") {
+      return res.status(403).json({ message: "Admins cannot be deleted!" });
+    }
+
+    await db.User.destroy({ where: { id: userId } });
+
+    res.json({ message: "✅ User deleted successfully!" });
   } catch (error) {
-    res.status(500).send("Error deleting user.");
+    console.error("❌ Error deleting user:", error);
+    res.status(500).json({ message: "Failed to delete user." });
   }
 });
 
 module.exports = router;
+
 
 
 
