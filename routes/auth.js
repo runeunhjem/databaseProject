@@ -74,7 +74,7 @@ router.post("/signup", async (req, res, next) => {
 router.post(
   "/login",
   passport.authenticate("local", {
-    successRedirect: "/",
+    successRedirect: "/start",
     failureRedirect: "/auth/login",
     failureFlash: true,
   })

@@ -6,8 +6,8 @@
         <th>ID</th>
         <th class="text-start">Hotel Name</th>
         <th class="text-start">Location</th>
-        <th class="text-start">Average Rating</th>
-        <th>Hotel Details</th>
+        <th class="text-start whitespace">Average Rating</th>
+        <th class="whitespace">Hotel Details</th>
         <th>Reservations</th>
         <th>Action</th>
       </tr>
@@ -16,9 +16,9 @@
       <% hotels.forEach(hotel => { %>
       <tr>
         <td><%= hotel.id %></td>
-        <td class="text-start"><%= hotel.name %></td>
-        <td class="text-start"><%= hotel.location %></td>
-        <td class="text-start">
+        <td class="text-start whitespace"><%= hotel.name %></td>
+        <td class="text-start whitespace"><%= hotel.location %></td>
+        <td class="text-center">
           <% if (hotel.avgRating === "No ratings yet") { %>
           <span class="text-light">No ratings yet</span>
           <% } else { %> <%= hotel.avgRating %> <i class="bi bi-star-fill text-warning"></i>

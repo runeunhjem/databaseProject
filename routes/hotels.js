@@ -10,18 +10,31 @@ const jsonParser = bodyParser.json();
 const hotelService = new HotelService(db);
 const roomService = new RoomService(db); // ✅ Initialize it using the database
 
-// ✅ GET all hotels (Accessible to everyone)
-router.get("/", async function (req, res, next) {
+// ✅ GET all hotels OR search hotels by location
+router.get("/", async function (req, res) {
   try {
-    const hotels = await hotelService.get();
+    const { location } = req.query;
+    let hotels = location ? await hotelService.searchByLocation(location) : await hotelService.get();
+
+    // Ensure avgRating is properly formatted
+    hotels = hotels.map((hotel) => ({
+      ...hotel,
+      avgRating: hotel.avgRating !== null ? parseFloat(hotel.avgRating).toFixed(1) : "No ratings yet",
+    }));
+
+    if (req.xhr) {
+      return res.json(hotels); // ✅ AJAX response for live search
+    }
+
     res.render("hotels", { title: "Hotels", cssFile: "hotels", hotels });
   } catch (error) {
+    console.error("❌ Error fetching hotels:", error);
     res.status(500).send("Error fetching hotels.");
   }
 });
 
-// ✅ GET hotel details (Accessible to everyone)
-router.get("/:hotelId", async function (req, res, next) {
+// ✅ GET hotel details
+router.get("/:hotelId", async function (req, res) {
   try {
     const userId = req.user?.id ?? 0;
     const hotel = await hotelService.getHotelDetails(req.params.hotelId, userId);
@@ -42,16 +55,14 @@ router.get("/:hotelId", async function (req, res, next) {
       title: "Internal Server Error",
       status: 500,
       message: "An error occurred while retrieving the hotel.",
-      details: "",
     });
   }
 });
 
 // ✅ POST create a new hotel (Only Admins)
-router.post("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res, next) {
+router.post("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res) {
   try {
-    let { name, location, rooms } = req.body;
-
+    const { name, location, rooms } = req.body;
     if (!name || !location || !Array.isArray(rooms) || rooms.length === 0) {
       return res.status(400).json({ message: "Hotel name, location, and at least one room type are required!" });
     }
@@ -59,30 +70,23 @@ router.post("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (re
     await hotelService.create(name, location, rooms);
     res.status(201).json({ message: "Hotel and rooms created successfully!" });
   } catch (error) {
-    console.error("Error creating hotel and rooms:", error);
+    console.error("❌ Error creating hotel and rooms:", error);
     res.status(500).json({ message: "Error creating hotel and rooms." });
   }
 });
 
-// ✅ DELETE remove a hotel (Only Admins)
-router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res, next) {
+// ✅ DELETE a hotel (Only Admins)
+router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res) {
   try {
     const { id } = req.body;
-
-    if (!id) {
-      return res.status(400).json({ message: "Hotel ID is required." });
-    }
+    if (!id) return res.status(400).json({ message: "Hotel ID is required." });
 
     console.log("Deleting hotel with ID:", id);
-
-    // ✅ Check if hotel exists before deleting
     const hotelExists = await db.Hotel.findOne({ where: { id } });
-    if (!hotelExists) {
-      return res.status(404).json({ message: "Hotel not found." });
-    }
+
+    if (!hotelExists) return res.status(404).json({ message: "Hotel not found." });
 
     await db.Hotel.destroy({ where: { id } });
-
     res.json({ message: "✅ Hotel deleted successfully!" });
   } catch (error) {
     console.error("❌ Error deleting hotel:", error);
@@ -90,27 +94,17 @@ router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (
   }
 });
 
-
 // ✅ GET all reservations for a specific hotel
 router.get("/:hotelId/reservations", async (req, res) => {
   try {
     const { hotelId } = req.params;
     const reservations = await roomService.getReservationsByHotel(hotelId);
 
-    if (!reservations.length) {
-      return res.render("hotelReservations", {
-        title: "Hotel Reservations",
-        cssFile: "hotelReservations",
-        reservations: [],
-        message: "No reservations found for this hotel.",
-      });
-    }
-
     res.render("hotelReservations", {
       title: "Hotel Reservations",
       cssFile: "hotelReservations",
       reservations,
-      message: null,
+      message: reservations.length ? null : "No reservations found for this hotel.",
     });
   } catch (error) {
     console.error("❌ Error fetching hotel reservations:", error);
@@ -119,7 +113,7 @@ router.get("/:hotelId/reservations", async (req, res) => {
 });
 
 // ✅ GET all rooms for a specific hotel
-router.get("/:hotelId/rooms", async function (req, res, next) {
+router.get("/:hotelId/rooms", async function (req, res) {
   try {
     const userId = req.user?.id ?? 0;
     const hotelId = req.params.hotelId;
@@ -147,16 +141,12 @@ router.get("/:hotelId/rooms", async function (req, res, next) {
 router.post("/:hotelId/rate", checkIfAuthorized, async (req, res) => {
   try {
     const { hotelId } = req.params;
-    const { rating } = req.body; // Expecting rating from frontend
+    const { rating } = req.body;
     const userId = req.user?.id;
 
-    if (!userId) {
-      return res.status(401).json({ message: "You must be logged in to rate a hotel." });
-    }
-
-    if (!rating || rating < 1 || rating > 5) {
+    if (!userId) return res.status(401).json({ message: "You must be logged in to rate a hotel." });
+    if (!rating || rating < 1 || rating > 5)
       return res.status(400).json({ message: "Invalid rating. Please provide a rating between 1 and 5." });
-    }
 
     await hotelService.makeARate(userId, hotelId, rating);
     res.status(200).json({ message: "✅ Hotel rated successfully!" });
@@ -165,6 +155,5 @@ router.post("/:hotelId/rate", checkIfAuthorized, async (req, res) => {
     res.status(500).json({ message: "Failed to rate hotel." });
   }
 });
-
 
 module.exports = router;

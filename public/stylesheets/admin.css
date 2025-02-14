@@ -91,6 +91,11 @@
   background-color: #3127249c !important;
   color: white !important;
   border: none;
+  white-space: nowrap;
+}
+
+.whitespace {
+  white-space: nowrap;
 }
 
 .view:hover {

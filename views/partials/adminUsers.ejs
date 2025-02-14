@@ -4,7 +4,7 @@
     <thead>
       <tr>
         <th>ID</th>
-        <th class="text-start">Full Name</th>
+        <th class="text-start whitespace">Full Name</th>
         <th class="text-start">Email</th>
         <th class="text-start">Role</th>
         <th>Reservations</th>
@@ -15,7 +15,7 @@
       <% users.forEach(user => { %>
       <tr>
         <td><%= user.id %></td>
-        <td class="text-start"><%= user.firstName %> <%= user.lastName %></td>
+        <td class="text-start whitespace"><%= user.firstName %> <%= user.lastName %></td>
         <td class="text-start"><%= user.email %></td>
         <td class="text-start"><%= user.role %></td>
         <td>

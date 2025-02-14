@@ -166,6 +166,28 @@ class HotelService {
       return err;
     }
   }
+
+  // ✅ Search hotels by location using raw SQL
+  async searchByLocation(location) {
+    try {
+      return await sequelize.query(
+        `SELECT h.id, h.name, h.location,
+        COALESCE(ROUND(AVG(r.rating), 1), 0) AS avgRating
+      FROM Hotels h
+      LEFT JOIN Ratings r ON h.id = r.hotel_id
+      WHERE h.location LIKE :location
+      GROUP BY h.id
+      ORDER BY h.name ASC`,
+        {
+          replacements: { location: `${location}%` }, // ✅ Matches "Florida", "Florence", etc.
+          type: QueryTypes.SELECT,
+        }
+      );
+    } catch (err) {
+      console.error("❌ Error searching hotels:", err);
+      return [];
+    }
+  }
 }
 
 module.exports = HotelService;

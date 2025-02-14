@@ -5,31 +5,47 @@
     <%- include("partials/navbar") %>
 
     <div class="container text-center mt-5 main">
+      <!-- ✅ Search Bar -->
+      <div class="search-bar">
+        <form id="search-form" class="search-form">
+          <input
+            type="text"
+            id="hotel-search"
+            placeholder="Search hotels by location..."
+            class="form-control search-input"
+            aria-label="Enter a location to search for hotels" />
+          <button type="submit" id="search-btn" class="btn btn-primary search-button">
+            <i class="bi bi-search"></i> Search
+          </button>
+        </form>
+      </div>
+
       <h1 class="page-title">Choose a Hotel</h1>
 
-      <div class="hotel-list">
+      <!-- ✅ Results Container -->
+      <div id="hotel-results" class="hotel-list">
         <% hotels.forEach(hotel => { %>
-        <div class="hotel-card">
-          <div class="hotel-info">
-            <p class="hotel-name"><%= hotel.name %></p>
-            <p class="hotel-location"><i class="bi bi-geo-alt-fill"></i> <%= hotel.location %></p>
+          <div class="hotel-card">
+            <div class="hotel-info">
+              <p class="hotel-name"><%= hotel.name %></p>
+              <p class="hotel-location"><i class="bi bi-geo-alt-fill"></i> <%= hotel.location %></p>
+              <p class="hotel-rating">
+                <i class="bi bi-star-fill"></i>
+                <%= hotel.avgRating ? `${hotel.avgRating} / 5` : "No ratings yet" %>
+              </p>
+            </div>
+            <div class="hotel-actions">
+              <% if (user) { %>
+              <a href="/hotels/<%= hotel.id %>/rooms" class="btn btn-primary"> <i class="bi bi-key"></i> Rent a Room </a>
+              <% } %>
+              <a href="/hotels/<%= hotel.id %>" class="btn btn-secondary"> <i class="bi bi-eye"></i> Details </a>
+              <% if (user && user.role === 'Admin') { %>
+              <button class="btn btn-danger delete-hotel" data-id="<%= hotel.id %>">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+              <% } %>
+            </div>
           </div>
-          <div class="hotel-actions">
-            <% if (user) { %>
-            <a href="/hotels/<%= hotel.id %>/rooms" class="btn btn-primary">
-              <i class="bi bi-key"></i> Rent a Room
-            </a>
-            <% } %>
-            <a href="/hotels/<%= hotel.id %>" class="btn btn-secondary">
-              <i class="bi bi-eye"></i> Details
-            </a>
-            <% if (user && user.role === 'Admin') { %>
-            <button class="btn btn-danger delete-hotel" data-id="<%= hotel.id %>">
-              <i class="bi bi-trash"></i> Delete
-            </button>
-            <% } %>
-          </div>
-        </div>
         <% }); %>
       </div>
 
@@ -52,6 +68,7 @@
     <script src="/javascripts/backToTop.js"></script>
     <script src="/javascripts/addHotel.js"></script>
     <script src="/javascripts/deleteHotel.js"></script>
+    <script src="/javascripts/searchHotels.js"></script>
 
     <%- include("partials/footer") %>
   </body>

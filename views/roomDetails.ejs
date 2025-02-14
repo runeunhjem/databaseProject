@@ -6,46 +6,50 @@
 
     <div class="container text-center mt-5">
       <% if (room) { %>
-        <h1 class="text-light">Room Details</h1>
-        <div class="room-card mx-auto my-5">
-          <div class="room-info">
-            <p class="room-hotel"><i class="bi bi-building"></i> <strong>Hotel:</strong> <%= room.hotelName %></p>
-            <p><i class="bi bi-box"></i> <strong>Type:</strong> <%= room.room_type %></p>
-            <p><i class="bi bi-people"></i> <strong>Capacity:</strong> <%= room.capacity %> people</p>
-            <p><i class="bi bi-cash-stack"></i> <strong>Price:</strong> $<%= room.price %> per night</p>
-          </div>
-
-          <div class="room-actions">
-            <a href="/hotels/<%= room.hotelId %>" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back to Hotel</a>
-            <% if (user) { %>
-              <button class="btn btn-primary rent-room" data-id="<%= room.id %>"><i class="bi bi-calendar-plus"></i> Rent This Room</button>
-            <% } else { %>
-              <p class="text-warning"><i class="bi bi-exclamation-triangle"></i> Log in to book this room.</p>
-            <% } %>
-          </div>
+      <h1 class="text-light">Room Details</h1>
+      <div class="room-card mx-auto my-5">
+        <div class="room-info">
+          <p class="room-hotel"><i class="bi bi-building"></i> <strong>Hotel:</strong> <%= room.hotelName %></p>
+          <p><i class="bi bi-box"></i> <strong>Type:</strong> <%= room.room_type %></p>
+          <p><i class="bi bi-people"></i> <strong>Capacity:</strong> <%= room.capacity %> people</p>
+          <p><i class="bi bi-cash-stack"></i> <strong>Price:</strong> $<%= room.price %> per night</p>
         </div>
 
-        <!-- ✅ Reservation Modal -->
-        <% if (user) { %>
-        <div id="reservationModal" class="modal">
-          <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3 class="text-center mt-3"><i class="bi bi-calendar-check"></i> Book a Room</h3>
-            <div class="form-group">
-              <label for="start-date">Start Date:</label>
-              <input type="date" id="start-date" class="form-control" />
-            </div>
-            <div class="form-group">
-              <label for="end-date">End Date:</label>
-              <input type="date" id="end-date" class="form-control" />
-            </div>
-            <button id="confirm-reservation" class="btn btn-primary">Confirm Reservation</button>
-          </div>
-        </div>
-        <% } %>
+        <div class="room-actions">
+          <a href="/hotels/<%= room.hotelId %>" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back to Hotel</a>
+          <% if (user) { %>
+          <button class="btn btn-primary rent-room" data-id="<%= room.id %>">
+            <i class="bi bi-calendar-plus"></i> Rent This Room
+          </button>
+          <% } else { %>
+          <p class="text-warning ms-4 text-start mb-0">
+            <i class="bi bi-exclamation-triangle"></i> Please
+            <a href="/auth/login" class="text-warning hover-text-info fw-bold text-decoration-underline">log in</a> to<br>book this room.
+          </p>
 
-      <% } else { %>
-        <h2 class="text-danger">Room not found.</h2>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- ✅ Reservation Modal -->
+      <% if (user) { %>
+      <div id="reservationModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h3 class="text-center mt-3"><i class="bi bi-calendar-check"></i> Book a Room</h3>
+          <div class="form-group">
+            <label for="start-date">Start Date:</label>
+            <input type="date" id="start-date" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="end-date">End Date:</label>
+            <input type="date" id="end-date" class="form-control" />
+          </div>
+          <button id="confirm-reservation" class="btn btn-primary">Confirm Reservation</button>
+        </div>
+      </div>
+      <% } %> <% } else { %>
+      <h2 class="text-danger">Room not found.</h2>
       <% } %>
     </div>
 

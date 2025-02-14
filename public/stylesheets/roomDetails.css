@@ -40,6 +40,7 @@
   justify-content: center;
   gap: 15px;
   margin-top: 15px;
+  align-items: center;
 }
 
 /* ✅ Button Styling */
@@ -76,7 +77,13 @@
 .text-warning {
   font-size: 1rem;
   font-weight: bold;
+  align-items: center;
 }
+
+.hover-text-info:hover {
+  color: #17a2b8 !important; /* Bootstrap 'info' color */
+}
+
 
 /* ✅ Modal Styling */
 .modal-content {

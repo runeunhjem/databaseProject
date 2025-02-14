@@ -11,7 +11,8 @@ const flash = require("connect-flash");
 
 var app = express(); // ✅ Ensure `app` is defined before using it
 
-const adminRouter = require("./routes/admin"); // ✅ Add this at the top
+const adminRouter = require("./routes/admin");
+const startRouter = require("./routes/start");
 
 // ✅ Middleware Order Matters!
 // 📌 Place these BEFORE route declarations to ensure body parsing works correctly
@@ -24,7 +25,7 @@ app.use(
   session({
     secret: "your-secret-key",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true, // ✅ Ensures session is created before checking first visit
     store: new SQLiteStore({ db: "sessions.sqlite" }),
   })
 );
@@ -32,7 +33,16 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ✅ Middleware: Make `user` available globally in all views (AFTER session setup)
+// ✅ Redirect first-time visitors to `/start`
+app.use((req, res, next) => {
+  if (!req.session.firstVisit) {
+    req.session.firstVisit = true;
+    return res.redirect("/start");
+  }
+  next();
+});
+
+// ✅ Middleware: Make `user` available globally in all views
 app.use((req, res, next) => {
   res.locals.user = req.user || null; // ✅ Make `user` available globally in all views
   next();
@@ -42,23 +52,31 @@ app.use((req, res, next) => {
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-// ✅ After session middleware
-app.use(flash());
-
 // ✅ Logging
 app.use(logger(process.env.NODE_ENV === "development" ? "dev" : "combined"));
 
 // ✅ Serve Static Files
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Routes (Define AFTER Middleware)
+// ✅ Flash Messages Middleware (After session)
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.messages = {
+    success: req.flash("success"),
+    error: req.flash("error"),
+  };
+  next();
+});
+
+// ✅ Routes
 app.use("/", require("./routes/index"));
+app.use("/start", startRouter);
+app.use("/admin", adminRouter);
 app.use("/users", require("./routes/users"));
 app.use("/hotels", require("./routes/hotels"));
 app.use("/rooms", require("./routes/rooms"));
 app.use("/reservations", require("./routes/reservations"));
-app.use("/auth", require("./routes/auth")); // ✅ Keep auth route last for clarity
-app.use("/admin", adminRouter); // ✅ Register the admin route
+app.use("/auth", require("./routes/auth"));
 
 // ✅ Database Sync
 db.sequelize
@@ -86,21 +104,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ✅ Make flash messages available globally
-app.use((req, res, next) => {
-  res.locals.messages = {
-    success: req.flash("success"),
-    error: req.flash("error"),
-  };
-  next();
-});
-
 module.exports = app;
-
-
-
-
-
-
-
 
