@@ -6,10 +6,10 @@
 
     <div class="container text-center mt-5">
       <h1 class="text-light"><%= hotel.name %> - Available Rooms</h1>
-      <p class="text-light"><%= hotel.location %></p>
+      <h2 class="text-light"><%= hotel.location %></h2>
 
       <% if (rooms.length > 0) { %>
-        <div class="row mt-4">
+        <div class="row mt-4 justify-content-center">
           <% rooms.forEach(room => { %>
             <div class="col-md-4 mb-4">
               <div class="card bg-dark text-light p-3 shadow-lg">
@@ -19,7 +19,7 @@
                   <p class="card-text"><strong>Price:</strong> $<%= room.price %> per night</p>
 
                   <% if (room.is_reserved) { %>
-                    <span class="badge bg-danger">Already Reserved</span>
+                    <button class="btn btn-danger" disabled>Already Reserved</button>
                   <% } else { %>
                     <% if (user) { %>
                       <button class="btn btn-primary rent-room" data-id="<%= room.id %>">
