@@ -87,7 +87,7 @@ function setupReservationModal(modal) {
     }
 
     if (endDate <= startDate) {
-      alert("❌ End date must be after the start date.");
+      alert("❌ End date must be at least one day after the start date.");
       return;
     }
 

@@ -53,7 +53,7 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 // ✅ Logging
-app.use(logger(process.env.NODE_ENV === "development" ? "dev" : "combined"));
+app.use(logger(process.env.NODE_ENV === "development" ? "dev" : "tiny"));
 
 // ✅ Serve Static Files
 app.use(express.static(path.join(__dirname, "public")));
