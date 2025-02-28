@@ -19,6 +19,7 @@ const startRouter = require("./routes/start");
 app.use(express.json()); // ✅ Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // ✅ Parse URL-encoded form data
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, "public"))); // ✅ Serve static files
 
 // ✅ Session Setup
 app.use(
@@ -105,4 +106,5 @@ app.use((err, req, res, next) => {
 });
 
 module.exports = app;
+
 
