@@ -8,6 +8,9 @@ const session = require("express-session");
 const passport = require("./config/passport");
 const SQLiteStore = require("connect-sqlite3")(session);
 const flash = require("connect-flash");
+const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require("./swagger-output.json");
+const bodyParser = require("body-parser");
 
 var app = express(); // ✅ Ensure `app` is defined before using it
 
@@ -79,6 +82,10 @@ app.use("/rooms", require("./routes/rooms"));
 app.use("/reservations", require("./routes/reservations"));
 app.use("/auth", require("./routes/auth"));
 
+// ✅ Swagger Middleware (Put them after route declarations)
+app.use(bodyParser.json());
+app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
+
 // ✅ Database Sync
 db.sequelize
   .sync()
@@ -106,5 +113,7 @@ app.use((err, req, res, next) => {
 });
 
 module.exports = app;
+
+
 
 
