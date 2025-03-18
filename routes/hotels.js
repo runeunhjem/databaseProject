@@ -12,18 +12,31 @@ const roomService = new RoomService(db); // ✅ Initialize it using the database
 
 // ✅ GET all hotels OR search hotels by location
 router.get("/", async function (req, res) {
+  /* #swagger.tags = ['Hotels']
+     #swagger.description = "Retrieve a list of all hotels or filter by location."
+     #swagger.produces = ["text/html"]
+     #swagger.parameters['location'] = {
+        in: 'query',
+        description: 'Optional location filter',
+        required: false,
+        type: 'string'
+     }
+     #swagger.responses[200] = {
+        description: "List of hotels retrieved successfully.",
+        content: { "text/html": {} }
+     }
+  */
   try {
     const { location } = req.query;
     let hotels = location ? await hotelService.searchByLocation(location) : await hotelService.get();
 
-    // Ensure avgRating is properly formatted
     hotels = hotels.map((hotel) => ({
       ...hotel,
       avgRating: hotel.avgRating !== null ? parseFloat(hotel.avgRating).toFixed(1) : "No ratings yet",
     }));
 
     if (req.xhr) {
-      return res.json(hotels); // ✅ AJAX response for live search
+      return res.json(hotels);
     }
 
     res.render("hotels", { title: "Hotels", cssFile: "hotels", hotels });
@@ -35,6 +48,21 @@ router.get("/", async function (req, res) {
 
 // ✅ GET hotel details
 router.get("/:hotelId", async function (req, res) {
+  /* #swagger.tags = ['Hotels']
+     #swagger.description = "Retrieve details of a specific hotel."
+     #swagger.produces = ["text/html"]
+     #swagger.parameters['hotelId'] = {
+        in: 'path',
+        description: 'ID of the hotel',
+        required: true,
+        type: 'integer'
+     }
+     #swagger.responses[200] = {
+        description: "Hotel details retrieved successfully.",
+        content: { "text/html": {} }
+     }
+     #swagger.responses[404] = { description: "Hotel not found." }
+  */
   try {
     const userId = req.user?.id ?? 0;
     const hotel = await hotelService.getHotelDetails(req.params.hotelId, userId);
@@ -61,6 +89,20 @@ router.get("/:hotelId", async function (req, res) {
 
 // ✅ POST create a new hotel (Only Admins)
 router.post("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res) {
+  /* #swagger.tags = ['Hotels']
+     #swagger.description = "Creates a new hotel with rooms. Admin access only."
+     #swagger.parameters['body'] = {
+        in: 'body',
+        description: 'Hotel details including name, location, and rooms',
+        required: true,
+        schema: { $ref: "#/definitions/Hotel" }
+     }
+     #swagger.responses[201] = {
+        description: "Hotel and rooms created successfully.",
+        content: { "application/json": {} }
+     }
+     #swagger.responses[400] = { description: "Missing required fields." }
+  */
   try {
     const { name, location, rooms } = req.body;
     if (!name || !location || !Array.isArray(rooms) || rooms.length === 0) {
@@ -77,11 +119,24 @@ router.post("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (re
 
 // ✅ DELETE a hotel (Only Admins)
 router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res) {
+  /* #swagger.tags = ['Hotels']
+     #swagger.description = "Delete a hotel by ID. Admin access only."
+     #swagger.parameters['body'] = {
+        in: 'body',
+        description: 'Hotel ID to delete',
+        required: true,
+        schema: { id: 1 }
+     }
+     #swagger.responses[200] = {
+        description: "Hotel deleted successfully.",
+        content: { "application/json": {} }
+     }
+     #swagger.responses[404] = { description: "Hotel not found." }
+  */
   try {
     const { id } = req.body;
     if (!id) return res.status(400).json({ message: "Hotel ID is required." });
 
-    console.log("Deleting hotel with ID:", id);
     const hotelExists = await db.Hotel.findOne({ where: { id } });
 
     if (!hotelExists) return res.status(404).json({ message: "Hotel not found." });
@@ -96,6 +151,20 @@ router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (
 
 // ✅ GET all reservations for a specific hotel
 router.get("/:hotelId/reservations", async (req, res) => {
+  /* #swagger.tags = ['Hotels']
+     #swagger.description = "Retrieve all reservations for a specific hotel."
+     #swagger.produces = ["text/html"]
+     #swagger.parameters['hotelId'] = {
+        in: 'path',
+        description: 'Hotel ID',
+        required: true,
+        type: 'integer'
+     }
+     #swagger.responses[200] = {
+        description: "Reservations retrieved successfully.",
+        content: { "text/html": {} }
+     }
+  */
   try {
     const { hotelId } = req.params;
     const reservations = await roomService.getReservationsByHotel(hotelId);
@@ -112,33 +181,28 @@ router.get("/:hotelId/reservations", async (req, res) => {
   }
 });
 
-// ✅ GET all rooms for a specific hotel
-router.get("/:hotelId/rooms", async function (req, res) {
-  try {
-    const userId = req.user?.id ?? 0;
-    const hotelId = req.params.hotelId;
-
-    const hotel = await hotelService.getHotelDetails(hotelId, userId);
-    if (!hotel) {
-      return res.status(404).render("error", { message: "Hotel not found" });
-    }
-
-    const rooms = await roomService.getHotelRooms(hotelId, userId);
-
-    res.render("hotelRooms", {
-      title: `${hotel.name} - Rooms`,
-      cssFile: "hotelRooms",
-      hotel,
-      rooms,
-    });
-  } catch (error) {
-    console.error("❌ Error fetching hotel rooms:", error);
-    res.status(500).render("error", { message: "Failed to retrieve rooms." });
-  }
-});
-
 // ✅ POST Rate a Hotel
 router.post("/:hotelId/rate", checkIfAuthorized, async (req, res) => {
+  /* #swagger.tags = ['Hotels']
+     #swagger.description = "Allows a user to rate a hotel."
+     #swagger.parameters['hotelId'] = {
+        in: 'path',
+        description: 'ID of the hotel',
+        required: true,
+        type: 'integer'
+     }
+     #swagger.parameters['body'] = {
+        in: 'body',
+        description: 'Rating from 1 to 5',
+        required: true,
+        schema: { rating: 5 }
+     }
+     #swagger.responses[200] = {
+        description: "Hotel rated successfully.",
+        content: { "application/json": {} }
+     }
+     #swagger.responses[400] = { description: "Invalid rating." }
+  */
   try {
     const { hotelId } = req.params;
     const { rating } = req.body;

@@ -5,8 +5,16 @@ const db = require("../models");
 const router = express.Router();
 const userService = new UserService(db);
 
-// ✅ Render Signup Page (Fix: Pass messages properly)
+// ✅ Render Signup Page
 router.get("/signup", (req, res) => {
+  /* #swagger.tags = ['Authentication']
+     #swagger.description = "Render the signup page."
+     #swagger.produces = ["text/html"]
+     #swagger.responses[200] = {
+        description: "Signup page rendered successfully.",
+        content: { "text/html": {} }
+     }
+  */
   res.render("signup", {
     title: "Sign Up",
     cssFile: "signup",
@@ -19,12 +27,35 @@ router.get("/signup", (req, res) => {
 
 // ✅ Render Login Page
 router.get("/login", (req, res) => {
-  const username = req.user ? req.user.firstName : null; // ✅ Show first name if logged in
+  /* #swagger.tags = ['Authentication']
+     #swagger.description = "Render the login page."
+     #swagger.produces = ["text/html"]
+     #swagger.responses[200] = {
+        description: "Login page rendered successfully.",
+        content: { "text/html": {} }
+     }
+  */
+  const username = req.user ? req.user.firstName : null;
   res.render("login", { title: "Login", cssFile: "login", username });
 });
 
 // ✅ Handle Signup Submission with Auto-login
 router.post("/signup", async (req, res, next) => {
+  /* #swagger.tags = ['Authentication']
+     #swagger.description = "User signup and auto-login."
+     #swagger.parameters['body'] = {
+        in: 'body',
+        description: 'User registration details',
+        required: true,
+        schema: { $ref: "#/definitions/User" }
+     }
+     #swagger.responses[201] = {
+        description: "User created successfully and logged in.",
+        content: { "application/json": {} }
+     }
+     #swagger.responses[400] = { description: "Validation error - Missing required fields or username taken." }
+     #swagger.responses[500] = { description: "Internal server error during signup." }
+  */
   try {
     console.log("Received signup payload:", req.body);
 
@@ -78,10 +109,32 @@ router.post(
     failureRedirect: "/auth/login",
     failureFlash: true,
   })
+  /* #swagger.tags = ['Authentication']
+     #swagger.description = "User login using local authentication strategy."
+     #swagger.parameters['body'] = {
+        in: 'body',
+        description: 'User login credentials',
+        required: true,
+        schema: { $ref: "#/definitions/User" }
+     }
+     #swagger.responses[200] = {
+        description: "User logged in successfully.",
+        content: { "application/json": {} }
+     }
+     #swagger.responses[401] = { description: "Invalid credentials." }
+  */
 );
 
-// ✅ Handle Logout
+// ✅ Handle Logout (GET)
 router.get("/logout", (req, res, next) => {
+  /* #swagger.tags = ['Authentication']
+     #swagger.description = "User logout and session termination."
+     #swagger.produces = ["text/html"]
+     #swagger.responses[200] = {
+        description: "User logged out successfully.",
+        content: { "text/html": {} }
+     }
+  */
   req.logout((err) => {
     if (err) {
       return next(err);
@@ -90,20 +143,36 @@ router.get("/logout", (req, res, next) => {
   });
 });
 
-// ✅ Handle Logout (POST Request)
+// ✅ Handle Logout (POST)
 router.post("/logout", (req, res, next) => {
+  /* #swagger.tags = ['Authentication']
+     #swagger.description = "Logout endpoint using POST request."
+     #swagger.responses[200] = {
+        description: "User logged out successfully.",
+        content: { "application/json": {} }
+     }
+  */
   req.logout((err) => {
     if (err) {
       return next(err);
     }
     req.session.destroy(() => {
-      res.redirect("/auth/login"); // ✅ Redirect to login after logout
+      res.redirect("/auth/login");
     });
   });
 });
 
-// ✅ Admin Route
+// ✅ Admin Access Route
 router.get("/admin", (req, res) => {
+  /* #swagger.tags = ['Authentication']
+     #swagger.description = "Admin access verification."
+     #swagger.produces = ["text/html"]
+     #swagger.responses[200] = {
+        description: "Welcome Admin.",
+        content: { "text/html": {} }
+     }
+     #swagger.responses[403] = { description: "Access Denied - Only Admins Allowed." }
+  */
   if (!req.user || req.user.role !== "Admin") {
     return res.status(403).send("Access Denied!");
   }

@@ -1,3 +1,4 @@
+// app.js
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -12,24 +13,23 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("./swagger-output.json");
 const bodyParser = require("body-parser");
 
-var app = express(); // ✅ Ensure `app` is defined before using it
+var app = express(); // Ensure `app` is defined before using it
 
 const adminRouter = require("./routes/admin");
 const startRouter = require("./routes/start");
 
-// ✅ Middleware Order Matters!
-// 📌 Place these BEFORE route declarations to ensure body parsing works correctly
-app.use(express.json()); // ✅ Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // ✅ Parse URL-encoded form data
+// Middleware setup
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded form data
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public"))); // ✅ Serve static files
+app.use(express.static(path.join(__dirname, "public"))); // Serve static files
 
-// ✅ Session Setup
+// Session setup
 app.use(
   session({
     secret: "your-secret-key",
     resave: false,
-    saveUninitialized: true, // ✅ Ensures session is created before checking first visit
+    saveUninitialized: true, // Ensures session is created before checking first visit
     store: new SQLiteStore({ db: "sessions.sqlite" }),
   })
 );
@@ -37,7 +37,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ✅ Redirect first-time visitors to `/start`
+// Redirect first-time visitors to `/start`
 app.use((req, res, next) => {
   if (!req.session.firstVisit) {
     req.session.firstVisit = true;
@@ -46,23 +46,21 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ Middleware: Make `user` available globally in all views
+// Make `user` available globally in all views
 app.use((req, res, next) => {
-  res.locals.user = req.user || null; // ✅ Make `user` available globally in all views
+  res.locals.user = req.user || null;
   next();
 });
 
-// ✅ View Engine Setup
+// View engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-// ✅ Logging
+// Logging
 app.use(logger(process.env.NODE_ENV === "development" ? "dev" : "tiny"));
-
-// ✅ Serve Static Files
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Flash Messages Middleware (After session)
+// Flash messages middleware (After session)
 app.use(flash());
 app.use((req, res, next) => {
   res.locals.messages = {
@@ -72,7 +70,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ Routes
+// Routes
 app.use("/", require("./routes/index"));
 app.use("/start", startRouter);
 app.use("/admin", adminRouter);
@@ -82,17 +80,17 @@ app.use("/rooms", require("./routes/rooms"));
 app.use("/reservations", require("./routes/reservations"));
 app.use("/auth", require("./routes/auth"));
 
-// ✅ Swagger Middleware (Put them after route declarations)
+// Swagger middleware (Placed after route declarations)
 app.use(bodyParser.json());
 app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
-// ✅ Database Sync
+// Database sync
 db.sequelize
   .sync()
   .then(() => console.log("✅ Database synced successfully!"))
   .catch((err) => console.error("❌ Database sync failed:", err));
 
-// ✅ Handle 404 Errors
+// Handle 404 errors
 app.use((req, res, next) => {
   res.status(404).render("error", {
     title: "Page Not Found",
@@ -102,7 +100,7 @@ app.use((req, res, next) => {
   });
 });
 
-// ✅ General Error Handler
+// General error handler
 app.use((err, req, res, next) => {
   res.status(err.status || 500).render("error", {
     title: "Error",
@@ -113,7 +111,4 @@ app.use((err, req, res, next) => {
 });
 
 module.exports = app;
-
-
-
 

@@ -13,28 +13,253 @@
   "paths": {
     "/": {
       "get": {
-        "description": "",
+        "tags": [
+          "Start"
+        ],
+        "description": "Fetch the welcome page with user details or best-rated hotel.",
+        "produces": [
+          "text/html"
+        ],
         "responses": {
-          "***REMOVED***": {
-            "description": ""
+          "200": {
+            "description": "Successfully retrieved welcome page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "title": "Welcome",
+                  "users": [
+                    {
+                      "id": 1,
+                      "firstName": "John",
+                      "lastName": "Doe",
+                      "email": "john@example.com",
+                      "role": "User"
+                    },
+                    {
+                      "id": 2,
+                      "firstName": "Jane",
+                      "lastName": "Smith",
+                      "email": "jane@example.com",
+                      "role": "Admin"
+                    }
+                  ],
+                  "user": {
+                    "id": 1,
+                    "username": "john_doe",
+                    "role": "User"
+                  },
+                  "bestHotel": {
+                    "id": 5,
+                    "name": "Luxury Inn",
+                    "avgRating": 4.8
+                  }
+                }
+              }
+            }
+          },
+          "302": {
+            "description": "Found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required."
+          },
+          "500": {
+            "description": "Internal server error - Failed to load start page."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Hotels"
+        ],
+        "description": "Creates a new hotel with rooms. Admin access only.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Hotel details including name, location, and rooms",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Hotel"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Hotel and rooms created successfully.",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Missing required fields."
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Rooms"
+        ],
+        "description": "Delete a room (Admin Only).",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Room ID to delete.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Room deleted successfully.",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Bad request - Missing room ID."
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Hotel not found."
+          },
+          "500": {
+            "description": "Internal server error - Failed to delete room."
           }
         }
       }
     },
-    "/start/": {
+    "/{hotelId}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Hotels"
+        ],
+        "description": "Retrieve details of a specific hotel.",
+        "produces": [
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of the hotel"
+          }
+        ],
         "responses": {
+          "200": {
+            "description": "Hotel details retrieved successfully.",
+            "content": {
+              "text/html": {}
+            }
+          },
+          "404": {
+            "description": "Hotel not found."
+          },
           "500": {
             "description": "Internal Server Error"
           }
         }
       }
     },
-    "/admin/": {
+    "/{hotelId}/reservations": {
       "get": {
-        "description": "",
+        "tags": [
+          "Hotels"
+        ],
+        "description": "Retrieve all reservations for a specific hotel.",
+        "produces": [
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "Hotel ID"
+          }
+        ],
         "responses": {
+          "200": {
+            "description": "Reservations retrieved successfully.",
+            "content": {
+              "text/html": {}
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/{hotelId}/rate": {
+      "post": {
+        "tags": [
+          "Hotels"
+        ],
+        "description": "Allows a user to rate a hotel.",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of the hotel"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Rating from 1 to 5",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rating": {
+                  "type": "number",
+                  "example": 5
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Hotel rated successfully.",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Invalid rating."
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
           "403": {
             "description": "Forbidden"
           },
@@ -44,344 +269,145 @@
         }
       }
     },
-    "/users/{userId}": {
+    "/{userId}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Users"
+        ],
+        "description": "Retrieve details of a specific user (Admin or the user themselves).",
+        "produces": [
+          "text/html"
+        ],
         "parameters": [
           {
             "name": "userId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "description": "User ID"
           }
         ],
         "responses": {
+          "200": {
+            "description": "Successfully retrieved user details.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "title": "User Details",
+                  "user": {
+                    "id": 1,
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "email": "john@example.com",
+                    "role": "User"
+                  }
+                }
+              }
+            }
+          },
+          "302": {
+            "description": "Found"
+          },
           "404": {
-            "description": "Not Found"
+            "description": "User not found."
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error - Failed to retrieve user details."
           }
         }
       }
     },
-    "/users/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/users/{id}": {
+    "/{id}": {
       "delete": {
-        "description": "",
+        "tags": [
+          "Users"
+        ],
+        "description": "Delete a user (Admin access required).",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "description": "User ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "User deleted successfully."
           },
           "400": {
-            "description": "Bad Request"
+            "description": "User ID is required."
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Admins cannot be deleted."
           },
           "404": {
-            "description": "Not Found"
+            "description": "User not found."
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error - Failed to delete user."
           }
         }
       }
     },
-    "/hotels/": {
+    "/{roomId}": {
       "get": {
-        "description": "",
-        "responses": {
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                },
-                "location": {
-                  "example": "any"
-                },
-                "rooms": {
-                  "example": "any"
-                }
-              }
-            }
-          }
+        "tags": [
+          "Rooms"
         ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                }
-              }
-            }
-          }
+        "description": "Retrieve details of a specific room.",
+        "produces": [
+          "text/html"
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/hotels/{hotelId}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "hotelId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/hotels/{hotelId}/reservations": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "hotelId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/hotels/{hotelId}/rooms": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "hotelId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/hotels/{hotelId}/rate": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "hotelId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "rating": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/rooms/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          }
-        }
-      }
-    },
-    "/rooms/{roomId}": {
-      "get": {
-        "description": "",
         "parameters": [
           {
             "name": "roomId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "description": "ID of the room to retrieve."
           }
         ],
         "responses": {
+          "200": {
+            "description": "Room details retrieved successfully.",
+            "content": {
+              "text/html": {}
+            }
+          },
           "404": {
-            "description": "Not Found"
+            "description": "Room not found."
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error - Failed to fetch room details."
           }
         }
       }
     },
-    "/rooms/add": {
+    "/add": {
       "post": {
-        "description": "",
+        "tags": [
+          "Rooms"
+        ],
+        "description": "Create a new room (Admin Only).",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "description": "Room details to create.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "capacity": {
-                  "example": "any"
-                },
-                "price": {
-                  "example": "any"
-                },
-                "hotelId": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/Room"
             }
           }
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Room added successfully."
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad request - Missing required fields."
           },
           "401": {
             "description": "Unauthorized"
@@ -390,185 +416,507 @@
             "description": "Forbidden"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error - Failed to add room."
           }
         }
       }
     },
-    "/rooms/reservation": {
+    "/reservation": {
       "post": {
-        "description": "",
+        "tags": [
+          "Rooms"
+        ],
+        "description": "Reserve a room (Only authorized users).",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "description": "Room reservation details.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "roomId": {
-                  "example": "any"
-                },
-                "startDate": {
-                  "example": "any"
-                },
-                "endDate": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/Reservation"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Room reserved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "success": true,
+                  "message": "Room reserved successfully!"
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad request - Invalid reservation data."
           },
           "401": {
             "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal server error - Failed to reserve room."
           }
         }
       }
     },
-    "/reservations/{reservationId}": {
+    "/signup": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Render the signup page.",
+        "produces": [
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "Signup page rendered successfully.",
+            "content": {
+              "text/html": {}
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "description": "User signup and auto-login.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "User registration details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User created successfully and logged in.",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Validation error - Missing required fields or username taken."
+          },
+          "500": {
+            "description": "Internal server error during signup."
+          }
+        }
+      }
+    },
+    "/login": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Render the login page.",
+        "produces": [
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "Login page rendered successfully.",
+            "content": {
+              "text/html": {}
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "description": "User login using local authentication strategy.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "User login credentials",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User logged in successfully.",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Invalid credentials."
+          }
+        }
+      }
+    },
+    "/logout": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "description": "User logout and session termination.",
+        "produces": [
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "User logged out successfully.",
+            "content": {
+              "text/html": {}
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Logout endpoint using POST request.",
+        "responses": {
+          "200": {
+            "description": "User logged out successfully.",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/admin": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Admin access verification.",
+        "produces": [
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "Welcome Admin.",
+            "content": {
+              "text/html": {}
+            }
+          },
+          "403": {
+            "description": "Access Denied - Only Admins Allowed."
+          }
+        }
+      }
+    },
+    "/{reservationId}": {
       "delete": {
-        "description": "",
+        "tags": [
+          "Reservations"
+        ],
+        "description": "Cancel an existing reservation by its ID.",
         "parameters": [
           {
             "name": "reservationId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "description": "ID of the reservation to be deleted."
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Reservation canceled successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "message": "✅ Reservation canceled successfully!"
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad request - Reservation ID is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "message": "Reservation ID is required."
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "Reservation not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "message": "Reservation not found."
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "reservationId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/auth/signup": {
-      "get": {
-        "description": "",
-        "responses": {
-          "***REMOVED***": {
-            "description": ""
-          }
-        }
-      },
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "username": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                },
-                "firstName": {
-                  "example": "any"
-                },
-                "lastName": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
+            "description": "Internal server error - Failed to cancel reservation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "message": "Failed to cancel reservation."
                 }
               }
             }
           }
+        }
+      },
+      "get": {
+        "tags": [
+          "Reservations"
+        ],
+        "description": "Retrieve details of a specific reservation.",
+        "produces": [
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "reservationId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of the reservation to retrieve."
+          }
         ],
         "responses": {
-          "***REMOVED***": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/auth/login": {
-      "get": {
-        "description": "",
-        "responses": {
-          "***REMOVED***": {
-            "description": ""
-          }
-        }
-      },
-      "post": {
-        "description": "",
-        "responses": {
-          "***REMOVED***": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/auth/logout": {
-      "get": {
-        "description": "",
-        "responses": {
-          "***REMOVED***": {
-            "description": ""
-          }
-        }
-      },
-      "post": {
-        "description": "",
-        "responses": {
-          "***REMOVED***": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/auth/admin": {
-      "get": {
-        "description": "",
-        "responses": {
           "200": {
-            "description": "OK"
+            "description": "Reservation details retrieved successfully.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "title": "Reservation Details",
+                  "reservation": {
+                    "id": 1,
+                    "user": {
+                      "id": 3,
+                      "name": "John Doe",
+                      "email": "john@example.com"
+                    },
+                    "hotel": {
+                      "id": 2,
+                      "name": "Grand Hotel",
+                      "location": "New York"
+                    },
+                    "room": {
+                      "id": 5,
+                      "type": "Suite",
+                      "price": 200
+                    },
+                    "startDate": "2025-03-20",
+                    "endDate": "2025-03-25"
+                  }
+                }
+              }
+            }
           },
-          "403": {
-            "description": "Forbidden"
+          "404": {
+            "description": "Reservation not found.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "title": "Error",
+                  "message": "Reservation Not Found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error - Failed to fetch reservation details.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "title": "Error",
+                  "message": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Hotel": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Example Hotel"
+        },
+        "location": {
+          "type": "string",
+          "example": "Example City"
+        },
+        "rooms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "capacity": {
+                "type": "number",
+                "example": 2
+              },
+              "price": {
+                "type": "number",
+                "example": 100
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "name",
+        "location",
+        "rooms"
+      ]
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "username": {
+          "type": "string",
+          "example": "exampleuser"
+        },
+        "firstName": {
+          "type": "string",
+          "example": "First"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Last"
+        },
+        "email": {
+          "type": "string",
+          "example": "user@example.com"
+        },
+        "role": {
+          "type": "string",
+          "example": "User"
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "firstName",
+        "lastName",
+        "email",
+        "role"
+      ]
+    },
+    "Room": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "capacity": {
+          "type": "number",
+          "example": 2
+        },
+        "price": {
+          "type": "number",
+          "example": 100
+        },
+        "hotelId": {
+          "type": "number",
+          "example": 1
+        }
+      },
+      "required": [
+        "id",
+        "capacity",
+        "price",
+        "hotelId"
+      ]
+    },
+    "Reservation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "userId": {
+          "type": "number",
+          "example": 1
+        },
+        "roomId": {
+          "type": "number",
+          "example": 1
+        },
+        "startDate": {
+          "type": "string",
+          "example": "2024-03-20"
+        },
+        "endDate": {
+          "type": "string",
+          "example": "2024-03-25"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "roomId",
+        "startDate",
+        "endDate"
+      ]
+    },
+    "AuthMiddleware": {
+      "type": "object",
+      "properties": {
+        "checkIfAuthorized": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "example": "Ensures the user is logged in. Returns 401 Unauthorized if not logged in, 403 Forbidden if the user lacks permissions."
+            }
+          }
+        },
+        "checkIfAdmin": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "example": "Ensures only Admins can access a route. Returns 403 Forbidden if unauthorized."
+            }
+          }
+        },
+        "canSeeUserDetails": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "example": "Allows users to view their own details, or Admins to view all users."
+            }
+          }
+        },
+        "canSeeUserList": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "example": "Allows only Admins to view the full user list."
+            }
           }
         }
       }

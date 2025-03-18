@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "swagger": "node swagger",
     "start": "node swagger",
     "dev": "nodemon ./bin/www"
   },
