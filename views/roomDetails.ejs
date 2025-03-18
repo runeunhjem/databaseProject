@@ -7,7 +7,7 @@
     <div class="container text-center mt-5">
       <% if (room) { %>
       <h1 class="text-light">Room Details</h1>
-      <div class="room-card mx-auto my-5">
+      <div class="room-card mx-auto my-5 <%= room.is_reserved ? 'reserved-room' : '' %>">
         <div class="room-info">
           <p class="room-hotel"><i class="bi bi-building"></i> <strong>Hotel:</strong> <%= room.hotelName %></p>
           <p><i class="bi bi-box"></i> <strong>Type:</strong> <%= room.room_type %></p>
@@ -15,18 +15,30 @@
           <p><i class="bi bi-cash-stack"></i> <strong>Price:</strong> $<%= room.price %> per night</p>
         </div>
 
+        <% if (room.is_reserved) { %>
+          <p class="text-warning reservation-notice text-success">You have booked this!</p>
+        <% } else { %>
+          <p class="reservation-placeholder text-light">✅ Room is available</p>
+        <% } %>
+
         <div class="room-actions">
           <a href="/hotels/<%= room.hotelId %>" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back to Hotel</a>
-          <% if (user) { %>
-          <button class="btn btn-primary rent-room" data-id="<%= room.id %>">
-            <i class="bi bi-calendar-plus"></i> Rent This Room
-          </button>
-          <% } else { %>
-          <p class="text-warning ms-4 text-start mb-0">
-            <i class="bi bi-exclamation-triangle"></i> Please
-            <a href="/auth/login" class="text-warning hover-text-info fw-bold text-decoration-underline">log in</a> to<br>book this room.
-          </p>
 
+          <% if (user) { %>
+            <% if (!room.is_reserved) { %>
+              <button class="btn btn-primary rent-room" data-id="<%= room.id %>">
+                <i class="bi bi-calendar-plus"></i> Rent This Room
+              </button>
+            <% } else { %>
+              <a href="/users/<%= user.id %>" class="btn btn-warning">
+                <i class="bi bi-bookmark-check"></i> My Reservations
+              </a>
+            <% } %>
+          <% } else { %>
+            <p class="text-warning ms-4 text-start mb-0">
+              <i class="bi bi-exclamation-triangle"></i> Please
+              <a href="/auth/login" class="text-warning hover-text-info fw-bold text-decoration-underline">log in</a> to<br>book this room.
+            </p>
           <% } %>
         </div>
       </div>

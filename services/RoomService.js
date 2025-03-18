@@ -147,8 +147,8 @@ class RoomService {
     }
   }
 
-  // ✅ Get specific room details
-  async getRoomDetails(roomId) {
+  // ✅ Get specific room details (including reservation status)
+  async getRoomDetails(roomId, userId = null) {
     try {
       const room = await sequelize.query(
         `SELECT r.id, r.capacity, r.price, h.id AS hotelId, h.name AS hotelName, h.location,
@@ -158,12 +158,16 @@ class RoomService {
           WHEN r.capacity = 5 THEN 'Junior Suite'
           WHEN r.capacity > 5 THEN 'Suite'
           ELSE CONCAT('Room for ', r.capacity, ' people')
-        END AS room_type
+        END AS room_type,
+        CASE
+          WHEN EXISTS (SELECT 1 FROM Reservations WHERE room_id = r.id AND user_id = :userId)
+          THEN 1 ELSE 0
+        END AS is_reserved
       FROM Rooms r
       JOIN Hotels h ON r.hotel_id = h.id
       WHERE r.id = :roomId`,
         {
-          replacements: { roomId },
+          replacements: { roomId, userId },
           type: QueryTypes.SELECT,
         }
       );

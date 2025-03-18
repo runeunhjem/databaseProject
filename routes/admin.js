@@ -14,13 +14,20 @@ const roomService = new RoomService(db);
 router.get("/", checkIfAdmin, async (req, res) => {
   /* #swagger.tags = ['Admin']
      #swagger.description = "Retrieves all necessary data for the admin panel. Admin access only."
+     #swagger.path = "/admin"
      #swagger.produces = ["text/html"]
      #swagger.responses[200] = {
         description: "Admin panel rendered successfully.",
         content: { "text/html": {} }
      }
-     #swagger.responses[403] = { description: "Forbidden - Admin access required." }
-     #swagger.responses[500] = { description: "Internal Server Error - Failed to load admin panel." }
+     #swagger.responses[403] = {
+        description: "Forbidden - Admin access required.",
+        content: { "application/json": { schema: { message: "Forbidden - Admin access required." } } }
+     }
+     #swagger.responses[500] = {
+        description: "Internal Server Error - Failed to load admin panel.",
+        content: { "application/json": { schema: { message: "Failed to load the admin panel." } } }
+     }
   */
   try {
     const users = await userService.getAll();

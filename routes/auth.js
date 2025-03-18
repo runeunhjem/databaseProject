@@ -43,6 +43,7 @@ router.get("/login", (req, res) => {
 router.post("/signup", async (req, res, next) => {
   /* #swagger.tags = ['Authentication']
      #swagger.description = "User signup and auto-login."
+     #swagger.consumes = ["application/json"]
      #swagger.parameters['body'] = {
         in: 'body',
         description: 'User registration details',
@@ -51,7 +52,7 @@ router.post("/signup", async (req, res, next) => {
      }
      #swagger.responses[201] = {
         description: "User created successfully and logged in.",
-        content: { "application/json": {} }
+        content: { "application/json": { schema: { message: "User created successfully and logged in." } } }
      }
      #swagger.responses[400] = { description: "Validation error - Missing required fields or username taken." }
      #swagger.responses[500] = { description: "Internal server error during signup." }
@@ -111,6 +112,7 @@ router.post(
   })
   /* #swagger.tags = ['Authentication']
      #swagger.description = "User login using local authentication strategy."
+     #swagger.consumes = ["application/json"]
      #swagger.parameters['body'] = {
         in: 'body',
         description: 'User login credentials',
@@ -119,7 +121,7 @@ router.post(
      }
      #swagger.responses[200] = {
         description: "User logged in successfully.",
-        content: { "application/json": {} }
+        content: { "application/json": { schema: { message: "User logged in successfully." } } }
      }
      #swagger.responses[401] = { description: "Invalid credentials." }
   */
@@ -147,9 +149,10 @@ router.get("/logout", (req, res, next) => {
 router.post("/logout", (req, res, next) => {
   /* #swagger.tags = ['Authentication']
      #swagger.description = "Logout endpoint using POST request."
+     #swagger.consumes = ["application/json"]
      #swagger.responses[200] = {
         description: "User logged out successfully.",
-        content: { "application/json": {} }
+        content: { "application/json": { schema: { message: "User logged out successfully." } } }
      }
   */
   req.logout((err) => {
@@ -157,7 +160,7 @@ router.post("/logout", (req, res, next) => {
       return next(err);
     }
     req.session.destroy(() => {
-      res.redirect("/auth/login");
+      res.json({ message: "User logged out successfully." });
     });
   });
 });

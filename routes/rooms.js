@@ -76,15 +76,38 @@ router.get("/:roomId", async function (req, res, next) {
 router.post("/add", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res, next) {
   /* #swagger.tags = ['Rooms']
      #swagger.description = "Create a new room (Admin Only)."
+     #swagger.path = "/rooms/add"
+     #swagger.consumes = ["application/json"]
      #swagger.parameters['body'] = {
         in: 'body',
         description: 'Room details to create.',
         required: true,
         schema: { $ref: "#/definitions/Room" }
      }
-     #swagger.responses[201] = { description: "Room added successfully." }
-     #swagger.responses[400] = { description: "Bad request - Missing required fields." }
-     #swagger.responses[500] = { description: "Internal server error - Failed to add room." }
+     #swagger.responses[201] = {
+        description: "Room added successfully.",
+        content: {
+          "application/json": {
+            schema: { message: "✅ Room added successfully!" }
+          }
+        }
+     }
+     #swagger.responses[400] = {
+        description: "Bad request - Missing required fields.",
+        content: {
+          "application/json": {
+            schema: { message: "❌ Capacity, price, and hotelId are required!" }
+          }
+        }
+     }
+     #swagger.responses[500] = {
+        description: "Internal server error - Failed to add room.",
+        content: {
+          "application/json": {
+            schema: { message: "❌ Internal server error." }
+          }
+        }
+     }
   */
   try {
     const { capacity, price, hotelId } = req.body;
@@ -105,15 +128,25 @@ router.post("/add", checkIfAuthorized, checkIfAdmin, jsonParser, async function 
 router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res, next) {
   /* #swagger.tags = ['Rooms']
      #swagger.description = "Delete a room (Admin Only)."
+     #swagger.consumes = ["application/json"]
      #swagger.parameters['body'] = {
         in: 'body',
         description: 'Room ID to delete.',
         required: true,
         schema: { id: 1 }
      }
-     #swagger.responses[200] = { description: "Room deleted successfully." }
-     #swagger.responses[400] = { description: "Bad request - Missing room ID." }
-     #swagger.responses[500] = { description: "Internal server error - Failed to delete room." }
+     #swagger.responses[200] = {
+        description: "Room deleted successfully.",
+        content: { "application/json": {} }
+     }
+     #swagger.responses[400] = {
+        description: "Bad request - Missing room ID.",
+        content: { "application/json": {} }
+     }
+     #swagger.responses[500] = {
+        description: "Internal server error - Failed to delete room.",
+        content: { "application/json": {} }
+     }
   */
   try {
     const { id } = req.body;
@@ -124,44 +157,6 @@ router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (
   } catch (error) {
     console.error("❌ Error deleting room:", error);
     res.status(500).json({ message: "❌ Failed to delete room." });
-  }
-});
-
-/* ✅ POST rent a room (Only Users & Admins) */
-router.post("/reservation", checkIfAuthorized, jsonParser, async function (req, res, next) {
-  /* #swagger.tags = ['Rooms']
-     #swagger.description = "Reserve a room (Only authorized users)."
-     #swagger.parameters['body'] = {
-        in: 'body',
-        description: 'Room reservation details.',
-        required: true,
-        schema: { $ref: "#/definitions/Reservation" }
-     }
-     #swagger.responses[200] = {
-        description: "Room reserved successfully.",
-        content: { "application/json": { schema: { success: true, message: "Room reserved successfully!" } } }
-     }
-     #swagger.responses[400] = { description: "Bad request - Invalid reservation data." }
-     #swagger.responses[500] = { description: "Internal server error - Failed to reserve room." }
-  */
-  try {
-    const userId = req.user.id;
-    const { roomId, startDate, endDate } = req.body;
-
-    if (!roomId || !startDate || !endDate) {
-      return res.status(400).json({ message: "❌ Room ID, start date, and end date are required!" });
-    }
-
-    const result = await roomService.rentARoom(userId, roomId, startDate, endDate);
-
-    if (result.success) {
-      res.json({ success: true, message: result.message });
-    } else {
-      res.status(400).json({ success: false, message: result.message });
-    }
-  } catch (error) {
-    console.error("❌ Error reserving room:", error);
-    res.status(500).json({ message: "❌ Failed to reserve room." });
   }
 });
 

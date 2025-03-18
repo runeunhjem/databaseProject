@@ -46,6 +46,65 @@ router.get("/", async function (req, res) {
   }
 });
 
+// ✅ GET all rooms for a specific hotel
+router.get("/:hotelId/rooms", async function (req, res) {
+  /* #swagger.tags = ['Hotels']
+     #swagger.description = "Retrieve all rooms available for a specific hotel."
+     #swagger.produces = ["text/html"]
+     #swagger.parameters['hotelId'] = {
+        in: 'path',
+        description: 'ID of the hotel',
+        required: true,
+        type: 'integer'
+     }
+     #swagger.responses[200] = {
+        description: "Rooms retrieved successfully.",
+        content: { "text/html": {} }
+     }
+     #swagger.responses[404] = {
+        description: "Hotel not found or has no rooms.",
+        content: { "text/html": { schema: { title: "Error", message: "Hotel Not Found" } } }
+     }
+     #swagger.responses[500] = {
+        description: "Internal server error.",
+        content: { "text/html": { schema: { title: "Error", message: "Internal Server Error" } } }
+     }
+  */
+  try {
+    const { hotelId } = req.params;
+    const userId = req.user ? req.user.id : null; // ✅ Get user ID if logged in
+
+    // ✅ Find the hotel
+    const hotel = await db.Hotel.findOne({ where: { id: hotelId } });
+    if (!hotel) {
+      return res.status(404).render("error", {
+        title: "Hotel Not Found",
+        status: 404,
+        message: "Hotel Not Found",
+        details: `No hotel found with ID ${hotelId}.`,
+      });
+    }
+
+    // ✅ Fetch rooms correctly with room_type and max_capacity
+    const rooms = await roomService.getHotelRooms(hotelId, userId);
+    console.log("📌 Debug: Rooms fetched for hotelRooms.ejs", JSON.stringify(rooms, null, 2));
+
+    res.render("hotelRooms", {
+      title: `${hotel.name} - Rooms`,
+      cssFile: "hotelRooms",
+      hotel,
+      rooms,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching rooms for hotel:", error);
+    res.status(500).render("error", {
+      title: "Internal Server Error",
+      status: 500,
+      message: "An error occurred while fetching rooms for the hotel.",
+    });
+  }
+});
+
 // ✅ GET hotel details
 router.get("/:hotelId", async function (req, res) {
   /* #swagger.tags = ['Hotels']
@@ -91,6 +150,7 @@ router.get("/:hotelId", async function (req, res) {
 router.post("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (req, res) {
   /* #swagger.tags = ['Hotels']
      #swagger.description = "Creates a new hotel with rooms. Admin access only."
+     #swagger.path = "/hotels"
      #swagger.parameters['body'] = {
         in: 'body',
         description: 'Hotel details including name, location, and rooms',
@@ -185,6 +245,7 @@ router.get("/:hotelId/reservations", async (req, res) => {
 router.post("/:hotelId/rate", checkIfAuthorized, async (req, res) => {
   /* #swagger.tags = ['Hotels']
      #swagger.description = "Allows a user to rate a hotel."
+     #swagger.path = "/hotels/{hotelId}/rate"
      #swagger.parameters['hotelId'] = {
         in: 'path',
         description: 'ID of the hotel',

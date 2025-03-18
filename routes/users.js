@@ -14,6 +14,7 @@ const userService = new UserService(db);
 router.get("/", canSeeUserList, async function (req, res, next) {
   /* #swagger.tags = ['Users']
      #swagger.description = "Retrieve a list of all users (Admin access required)."
+     #swagger.path = "/users"
      #swagger.produces = ["text/html"]
      #swagger.responses[200] = {
         description: "Successfully retrieved users list.",
@@ -44,6 +45,7 @@ router.get("/", canSeeUserList, async function (req, res, next) {
 router.get("/:userId", canSeeUserDetails, async function (req, res, next) {
   /* #swagger.tags = ['Users']
      #swagger.description = "Retrieve details of a specific user (Admin or the user themselves)."
+     #swagger.path = "/users/{userId}"
      #swagger.produces = ["text/html"]
      #swagger.parameters['userId'] = {
         in: "path",
@@ -68,8 +70,14 @@ router.get("/:userId", canSeeUserDetails, async function (req, res, next) {
           }
         }
      }
-     #swagger.responses[404] = { description: "User not found." }
-     #swagger.responses[500] = { description: "Internal server error - Failed to retrieve user details." }
+     #swagger.responses[404] = {
+        description: "User not found.",
+        content: { "text/html": { schema: { title: "Error", message: "User Not Found" } } }
+     }
+     #swagger.responses[500] = {
+        description: "Internal server error - Failed to retrieve user details.",
+        content: { "text/html": { schema: { title: "Error", message: "Internal Server Error" } } }
+     }
   */
   try {
     const user = await userService.getOne(req.params.userId);
@@ -99,17 +107,33 @@ router.get("/:userId", canSeeUserDetails, async function (req, res, next) {
 router.delete("/:id", checkIfAdmin, async (req, res) => {
   /* #swagger.tags = ['Users']
      #swagger.description = "Delete a user (Admin access required)."
+     #swagger.path = "/users/{id}"
      #swagger.parameters['id'] = {
         in: "path",
         description: "User ID",
         required: true,
         type: "integer"
      }
-     #swagger.responses[200] = { description: "User deleted successfully." }
-     #swagger.responses[400] = { description: "User ID is required." }
-     #swagger.responses[403] = { description: "Admins cannot be deleted." }
-     #swagger.responses[404] = { description: "User not found." }
-     #swagger.responses[500] = { description: "Internal server error - Failed to delete user." }
+     #swagger.responses[200] = {
+        description: "User deleted successfully.",
+        content: { "application/json": { schema: { message: "✅ User deleted successfully!" } } }
+     }
+     #swagger.responses[400] = {
+        description: "User ID is required.",
+        content: { "application/json": { schema: { message: "User ID is required." } } }
+     }
+     #swagger.responses[403] = {
+        description: "Admins cannot be deleted.",
+        content: { "application/json": { schema: { message: "Admins cannot be deleted!" } } }
+     }
+     #swagger.responses[404] = {
+        description: "User not found.",
+        content: { "application/json": { schema: { message: "User not found." } } }
+     }
+     #swagger.responses[500] = {
+        description: "Internal server error - Failed to delete user.",
+        content: { "application/json": { schema: { message: "Failed to delete user." } } }
+     }
   */
   try {
     const userId = req.params.id;
@@ -138,6 +162,4 @@ router.delete("/:id", checkIfAdmin, async (req, res) => {
 });
 
 module.exports = router;
-
-
 

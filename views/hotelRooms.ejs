@@ -4,30 +4,43 @@
   <body class="d-flex flex-column min-vh-100">
     <%- include("partials/navbar") %>
 
-    <div class="container text-center mt-5">
-      <h1 class="text-light"><%= hotel.name %> - Available Rooms</h1>
-      <h2 class="text-light"><%= hotel.location %></h2>
+    <div class="container text-center mt-5 hotel-details">
+      <h1 class="page-title"><%= hotel.name %> - Available Rooms</h1>
+      <h2 class="hotel-location"><i class="bi bi-geo-alt-fill"></i> <strong><%= hotel.location %></strong></h2>
 
       <% if (rooms.length > 0) { %>
-        <div class="row mt-4 justify-content-center">
+        <div class="room-list">
           <% rooms.forEach(room => { %>
-            <div class="col-md-4 mb-4">
-              <div class="card bg-dark text-light p-3 shadow-lg">
-                <div class="card-body">
-                  <h5 class="card-title"><%= room.room_type %></h5>
-                  <p class="card-text"><strong>Capacity:</strong> <%= room.max_capacity %> people</p>
-                  <p class="card-text"><strong>Price:</strong> $<%= room.price %> per night</p>
+            <div class="room-card <%= room.is_reserved ? 'reserved-room' : '' %>">
+              <div class="room-info">
+                <h4 class="room-title"><%= room.room_type ? room.room_type : "Unknown Room Type" %></h4>
+                <p><i class="bi bi-people-fill"></i> Capacity: <strong><%= room.max_capacity ? room.max_capacity : "N/A" %> people</strong></p>
+                <p><i class="bi bi-cash-stack"></i> Price: <strong>$<%= Number(room.price).toFixed(2) %> per night</strong></p>
+              </div>
 
-                  <% if (room.is_reserved) { %>
-                    <button class="btn btn-danger" disabled>Already Reserved</button>
+              <% if (room.is_reserved) { %>
+                <p class="text-warning reservation-notice text-success">You have booked this!</p>
+              <% } else { %>
+                <p class="reservation-placeholder text-light">✅ Room is available</p>
+              <% } %>
+
+              <!-- ✅ Room Actions -->
+              <div class="room-actions">
+                <a href="/rooms/<%= room.id %>" class="btn btn-secondary">
+                  <i class="bi bi-eye"></i> View Room
+                </a>
+
+                <% if (user) { %>
+                  <% if (!room.is_reserved) { %>
+                    <button class="btn btn-primary rent-room" data-id="<%= room.id %>">
+                      <i class="bi bi-calendar-plus"></i> Rent This Room
+                    </button>
                   <% } else { %>
-                    <% if (user) { %>
-                      <button class="btn btn-primary rent-room" data-id="<%= room.id %>">
-                        <i class="bi bi-door-open"></i> Rent This Room
-                      </button>
-                    <% } %>
+                    <a href="/users/<%= user.id %>" class="btn btn-warning">
+                      <i class="bi bi-bookmark-check"></i> My Reservations
+                    </a>
                   <% } %>
-                </div>
+                <% } %>
               </div>
             </div>
           <% }); %>
@@ -38,6 +51,7 @@
     </div>
 
     <%- include("partials/footer") %>
+
     <!-- ✅ Reservation Modal -->
     <div id="reservationModal" class="modal">
       <div class="modal-content">

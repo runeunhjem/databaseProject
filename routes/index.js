@@ -5,6 +5,7 @@ var router = express.Router();
 router.get("/", (req, res) => {
   /* #swagger.tags = ['Home']
      #swagger.description = "Retrieves the homepage of the hotel booking system."
+     #swagger.path = "/"
      #swagger.produces = ["text/html"]
      #swagger.responses[200] = {
         description: "Homepage rendered successfully.",
@@ -18,5 +19,4 @@ router.get("/", (req, res) => {
 });
 
 module.exports = router;
-
 

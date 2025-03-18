@@ -9,6 +9,7 @@ const hotelService = new HotelService(db);
 router.get("/", async (req, res) => {
   /* #swagger.tags = ['Start']
      #swagger.description = "Fetch the welcome page with user details or best-rated hotel."
+     #swagger.path = "/start"
      #swagger.produces = ["text/html"]
      #swagger.responses[200] = {
         description: "Successfully retrieved welcome page.",
@@ -31,7 +32,8 @@ router.get("/", async (req, res) => {
         }
      }
      #swagger.responses[500] = {
-        description: "Internal server error - Failed to load start page."
+        description: "Internal server error - Failed to load start page.",
+        content: { "text/html": { schema: { title: "Error", message: "Failed to load start page." } } }
      }
   */
   try {
@@ -39,7 +41,7 @@ router.get("/", async (req, res) => {
     let bestHotel = null;
 
     if (!user) {
-      // Fetch all hotels and find the highest-rated one
+      // ✅ Fetch all hotels and find the highest-rated one
       const hotels = await hotelService.get();
       bestHotel = hotels.length > 0 ? hotels.sort((a, b) => b.avgRating - a.avgRating)[0] : null;
     }
@@ -52,7 +54,10 @@ router.get("/", async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Error loading start page:", error);
-    res.status(500).render("error", { title: "Error", message: "Failed to load start page." });
+    res.status(500).render("error", {
+      title: "Error",
+      message: "Failed to load start page.",
+    });
   }
 });
 

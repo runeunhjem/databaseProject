@@ -95,25 +95,36 @@ function setupReservationModal(modal) {
     const formattedEndDate = formatDateWithTime(endDate);
 
     // ✅ Get userId dynamically from the page (if stored in a hidden field)
-    const userId = document.getElementById("user-id")?.value; // Example: <input type="hidden" id="user-id" value="42">
+    const userId = document.getElementById("user-id")?.value;
     if (!userId) {
       alert("❌ Error: User ID not found. Please log in.");
       return;
     }
 
     try {
-      const response = await fetch("/rooms/reservation", {
+      const response = await fetch("/reservations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, roomId: selectedRoomId, startDate: formattedStartDate, endDate: formattedEndDate }),
       });
 
-      if (!response.ok) throw new Error(await response.text());
+      const responseData = await response.json(); // ✅ Parse the JSON response
+
+      if (!response.ok) {
+        if (responseData.errors && responseData.errors.length > 0) {
+          // ✅ Show all validation errors in an alert or other UI element
+          alert("❌ Validation Failed:\n" + responseData.errors.join("\n"));
+        } else {
+          alert("❌ Error: " + (responseData.message || "Something went wrong."));
+        }
+        return;
+      }
 
       alert("✅ Reservation successful!");
       window.location.reload();
     } catch (error) {
-      alert("❌ Something went wrong. Please try again later.");
+      console.error("❌ Network error:", error);
+      alert("❌ Network error. Please try again later.");
     }
   });
 }

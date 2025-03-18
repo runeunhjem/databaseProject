@@ -1,6 +1,6 @@
 /* ✅ Centering the room details container */
 .container {
-  max-width: 800px;
+  max-width: 1200px;
   margin: auto;
 }
 
@@ -103,4 +103,19 @@
 
 .modal .btn-primary {
   width: 100%;
+}
+
+/* ✅ Reserved Room Styling (Similar to other pages) */
+.reserved-room {
+  background-color: rgb(63, 42, 32);
+  border-left: 3px solid red;
+}
+
+/* ✅ Reserved Room Notice */
+.reservation-notice {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: limegreen;
+  text-align: center;
+  margin-top: 10px;
 }
