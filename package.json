@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "chromedriver": "^134.0.3",
     "connect-flash": "^0.1.1",
     "connect-sqlite3": "^0.9.15",
     "cookie-parser": "~1.4.4",
@@ -23,9 +24,9 @@
     "nodemon": "^3.1.9",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
+    "selenium-webdriver": "^4.29.0",
     "sequelize": "^6.28.0",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.1"
   }
 }
-

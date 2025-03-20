@@ -6,7 +6,9 @@
     <!-- Right Side: Hi, USER above Navbar Links -->
     <div class="d-flex flex-column text-end">
       <% if (user) { %>
-      <div class="text-light mb-1 me-0 me-lg-4"><%= user.firstName %>!</div>
+      <a href="/users/<%= user.id %>" class="user-name me-0 me-lg-4">
+        Hi <%= user.firstName %>!
+      </a>
       <% } %>
 
       <!-- Burger Menu & Navbar Links -->

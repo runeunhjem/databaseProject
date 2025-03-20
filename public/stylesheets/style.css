@@ -35,6 +35,18 @@ body {
   align-items: center;
 }
 
+.user-name {
+  color: #eca02d;
+  margin-bottom: 0.25em;
+  margin-right: 0;
+  text-decoration: none;
+  transition: all 0.1s ease-in-out;
+}
+
+.user-name:hover {
+  color: #f8f9fa !important;
+}
+
 /* Ensure navbar dropdown opens below the burger icon */
 @media (max-width: 991px) {
   .navbar-collapse {

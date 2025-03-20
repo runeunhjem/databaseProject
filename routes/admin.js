@@ -34,11 +34,29 @@ router.get("/", checkIfAdmin, async (req, res) => {
     const hotels = await hotelService.get();
     const reservations = await roomService.getAllReservations();
 
+    // ✅ Fetch all rooms with hotel name included and sort by hotel name
+    const rooms = await db.sequelize.query(
+      `SELECT r.id, r.capacity, r.price,
+              CASE
+                WHEN r.capacity = 2 THEN 'Double Room'
+                WHEN r.capacity = 4 THEN 'Family Room'
+                WHEN r.capacity = 5 THEN 'Junior Suite'
+                WHEN r.capacity > 5 THEN 'Suite'
+                ELSE CONCAT('Room for ', r.capacity, ' people')
+              END AS room_type,
+              h.id AS hotel_id, h.name AS hotel_name
+      FROM Rooms r
+      JOIN Hotels h ON r.hotel_id = h.id
+      ORDER BY h.name ASC, r.id ASC`,
+      { type: db.Sequelize.QueryTypes.SELECT }
+    );
+
     res.render("admin", {
       title: "Admin Panel",
       cssFile: "admin",
       users,
       hotels,
+      rooms,
       reservations,
     });
   } catch (error) {

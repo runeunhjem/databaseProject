@@ -76,7 +76,7 @@ app.use("/start", startRouter);
 app.use("/admin", adminRouter);
 app.use("/users", require("./routes/users"));
 app.use("/hotels", require("./routes/hotels"));
-app.use("/rooms", require("./routes/rooms"));
+app.use("/rooms", require("./routes/rooms")); // ✅ Added Manage Rooms Route
 app.use("/reservations", require("./routes/reservations"));
 app.use("/auth", require("./routes/auth"));
 

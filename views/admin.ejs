@@ -11,6 +11,7 @@
       <div class="admin-menu">
         <a href="#users" class="btn btn-primary">Manage Users</a>
         <a href="#hotels" class="btn btn-primary">Manage Hotels</a>
+        <a href="#rooms" class="btn btn-primary">Manage Rooms</a>
         <a href="#reservations" class="btn btn-primary">Manage Reservations</a>
       </div>
 
@@ -18,6 +19,8 @@
       <div id="users"><%- include("partials/adminUsers", { users: users }) %></div>
 
       <div id="hotels"><%- include("partials/adminHotels", { hotels: hotels }) %></div>
+
+      <div id="rooms"><%- include("partials/adminRooms", { rooms: rooms }) %></div>
 
       <div id="reservations"><%- include("partials/adminReservations", { reservations: reservations }) %></div>
     </div>
@@ -33,6 +36,7 @@
     <script src="/javascripts/backToTop.js"></script>
     <script src="/javascripts/adminUsers.js"></script>
     <script src="/javascripts/deleteHotel.js"></script>
+    <script src="/javascripts/deleteRoom.js"></script>
     <script src="/javascripts/deleteReservation.js"></script>
   </body>
 </html>
