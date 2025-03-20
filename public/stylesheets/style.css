@@ -33,6 +33,7 @@ body {
   display: flex;
   font-size: 2.5rem;
   align-items: center;
+  text-decoration: none !important;
 }
 
 .user-name {
