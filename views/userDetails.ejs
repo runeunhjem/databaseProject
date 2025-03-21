@@ -5,7 +5,16 @@
     <%- include("partials/navbar") %>
 
     <div class="container text-center mt-5">
-      <h2 class="page-title" name="user"><%= user.firstName %> <%= user.lastName %></h2>
+      <!-- ✅ User Details Section -->
+      <div class="user-details">
+        <h2 class="page-title"><%= user.firstName %> <%= user.lastName %></h2>
+        <p>Email: <strong><%= user.email %></strong></p>
+        <p>Role: <strong><%= user.role %></strong></p>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- ✅ Reservations Section -->
       <h3 class="sub-title">My Reservations</h3>
 
       <% if (user.reservations.length > 0) { %>
@@ -26,7 +35,6 @@
           <tbody>
             <% user.reservations.forEach(reservation => { %>
             <tr>
-              <!-- ✅ Clickable Hotel Name -->
               <td class="text-start">
                 <a href="/hotels/<%= reservation.hotel_id %>" class="hotel-link">
                   <%= reservation.hotelName %>
