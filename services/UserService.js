@@ -51,7 +51,7 @@ class UserService {
   async getAll() {
     try {
       return await this.User.findAll({
-        attributes: ["id", "firstName", "lastName", "email", "role"],
+        attributes: ["id", "username", "firstName", "lastName", "email", "role"],
         order: [
           ["firstName", "ASC"],
           ["lastName", "ASC"],
