@@ -5,13 +5,16 @@ const db = require("../models");
 const bodyParser = require("body-parser");
 const { checkIfAuthorized, checkIfAdmin } = require("./authMiddleware");
 const RoomService = require("../services/RoomService");
+const cache = require("../middleware/caching.js");
+const client = require("../redis.js");
+const { invalidateHotelCache } = require("../utils/cacheInvalidation");
 
 const jsonParser = bodyParser.json();
 const hotelService = new HotelService(db);
 const roomService = new RoomService(db); // ✅ Initialize it using the database
 
 // ✅ GET all hotels OR search hotels by location
-router.get("/", async function (req, res) {
+router.get("/", cache, async function (req, res) {
   /* #swagger.tags = ['Hotels']
      #swagger.description = "Retrieve a list of all hotels or filter by location."
      #swagger.produces = ["text/html"]
@@ -35,6 +38,11 @@ router.get("/", async function (req, res) {
       avgRating: hotel.avgRating !== null ? parseFloat(hotel.avgRating).toFixed(1) : "No ratings yet",
     }));
 
+    // 💾 Save to Redis cache
+    await client.set(req.originalUrl, JSON.stringify(hotels), {
+      EX: 300, // Expire in 5 minutes
+    });
+
     if (req.xhr) {
       return res.json(hotels);
     }
@@ -47,7 +55,7 @@ router.get("/", async function (req, res) {
 });
 
 // ✅ GET all rooms for a specific hotel
-router.get("/:hotelId/rooms", async function (req, res) {
+router.get("/:hotelId/rooms", cache, async function (req, res) {
   /* #swagger.tags = ['Hotels']
      #swagger.description = "Retrieve all rooms available for a specific hotel."
      #swagger.produces = ["text/html"]
@@ -89,6 +97,9 @@ router.get("/:hotelId/rooms", async function (req, res) {
     const rooms = await roomService.getHotelRooms(hotelId, userId);
     console.log("📌 Debug: Rooms fetched for hotelRooms.ejs", JSON.stringify(rooms, null, 2));
 
+    // 💾 Save to Redis
+    await client.set(req.originalUrl, JSON.stringify({ hotel, rooms }), { EX: 300 });
+
     res.render("hotelRooms", {
       title: `${hotel.name} - Rooms`,
       cssFile: "hotelRooms",
@@ -106,7 +117,7 @@ router.get("/:hotelId/rooms", async function (req, res) {
 });
 
 // ✅ GET hotel details
-router.get("/:hotelId", async function (req, res) {
+router.get("/:hotelId", cache, async function (req, res) {
   /* #swagger.tags = ['Hotels']
      #swagger.description = "Retrieve details of a specific hotel."
      #swagger.produces = ["text/html"]
@@ -134,6 +145,9 @@ router.get("/:hotelId", async function (req, res) {
         details: `The hotel with ID ${req.params.hotelId} does not exist.`,
       });
     }
+
+    // 💾 Cache the hotel details
+    await client.set(req.originalUrl, JSON.stringify(hotel), { EX: 300 });
 
     res.render("hotelDetails", { title: hotel.name, cssFile: "hotelDetails", hotel });
   } catch (error) {
@@ -170,6 +184,10 @@ router.post("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (re
     }
 
     await hotelService.create(name, location, rooms);
+
+    // Invalidate all hotel list cache
+    await client.del("/hotels");
+
     res.status(201).json({ message: "Hotel and rooms created successfully!" });
   } catch (error) {
     console.error("❌ Error creating hotel and rooms:", error);
@@ -202,6 +220,10 @@ router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (
     if (!hotelExists) return res.status(404).json({ message: "Hotel not found." });
 
     await db.Hotel.destroy({ where: { id } });
+
+    // Clean up cached hotel + room details
+    await invalidateHotelCache(id);
+
     res.json({ message: "✅ Hotel deleted successfully!" });
   } catch (error) {
     console.error("❌ Error deleting hotel:", error);

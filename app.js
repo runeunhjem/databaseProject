@@ -1,10 +1,10 @@
 // app.js
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-var db = require("./models");
+const createError = require("http-errors");
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
+const db = require("./models");
 const session = require("express-session");
 const passport = require("./config/passport");
 const SQLiteStore = require("connect-sqlite3")(session);
@@ -12,8 +12,9 @@ const flash = require("connect-flash");
 const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("./swagger-output.json");
 const bodyParser = require("body-parser");
+require("./redis");
 
-var app = express(); // Ensure `app` is defined before using it
+const app = express();
 
 const adminRouter = require("./routes/admin");
 const startRouter = require("./routes/start");

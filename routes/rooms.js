@@ -4,6 +4,8 @@ const RoomService = require("../services/RoomService");
 const db = require("../models");
 const bodyParser = require("body-parser");
 const { checkIfAuthorized, checkIfAdmin } = require("./authMiddleware");
+const client = require("../redis.js");
+const { invalidateHotelCache } = require("../utils/cacheInvalidation");
 
 const jsonParser = bodyParser.json();
 const roomService = new RoomService(db);
@@ -22,6 +24,10 @@ router.get("/", async function (req, res, next) {
   try {
     const userId = req.user ? req.user.id : null;
     const rooms = await roomService.getAllRooms(userId);
+
+    // 💾 Save to Redis
+    await client.set(req.originalUrl, JSON.stringify(rooms), { EX: 300 });
+
     console.log("Fetching rooms for user ID:", userId);
     res.render("rooms", { title: "Rooms", cssFile: "rooms", rooms });
   } catch (error) {
@@ -117,6 +123,11 @@ router.post("/add", checkIfAuthorized, checkIfAdmin, jsonParser, async function 
     }
 
     await roomService.create(capacity, price, hotelId);
+
+    // Invalidate the cache for the hotel after adding a new room
+    await invalidateHotelCache(hotelId);
+
+
     res.status(201).json({ message: "✅ Room added successfully!" });
   } catch (error) {
     console.error("❌ Error adding room:", error);
@@ -152,7 +163,15 @@ router.delete("/", checkIfAuthorized, checkIfAdmin, jsonParser, async function (
     const { id } = req.body;
     if (!id) return res.status(400).json({ message: "Room ID is required!" });
 
+
+    // You need hotelId to call invalidateHotelCache()
+    // Fetch it before deletion
+    const room = await db.Room.findByPk(id);
+    if (!room) return res.status(404).json({ message: "Room not found." });
+
     await roomService.deleteRoom(id);
+    await invalidateHotelCache(room.hotel_id);
+
     res.json({ message: "✅ Room deleted successfully!" });
   } catch (error) {
     console.error("❌ Error deleting room:", error);

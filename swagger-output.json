@@ -77,7 +77,7 @@
             "description": "Forbidden"
           },
           "404": {
-            "description": "Hotel not found."
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal server error - Failed to delete room.",
