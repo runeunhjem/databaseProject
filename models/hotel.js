@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       name: { type: DataTypes.STRING, allowNull: false },
       location: { type: DataTypes.STRING, allowNull: false },
-      avg_rating: { type: DataTypes.DECIMAL(3, 2), ***REMOVED***Value: 0 },
+      avg_rating: { type: DataTypes.DECIMAL(3, 2), defaultValue: 0 },
     },
     {
       sequelize,

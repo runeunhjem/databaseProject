@@ -26,7 +26,8 @@ class RoomService {
             THEN 1 ELSE 0
           END AS is_reserved
         FROM Rooms r
-        JOIN Hotels h ON r.hotel_id = h.id`,
+        JOIN Hotels h ON r.hotel_id = h.id
+        ORDER BY h.name ASC, r.capacity ASC, r.price ASC`,
         {
           replacements: { userId },
           type: QueryTypes.SELECT,

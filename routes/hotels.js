@@ -296,6 +296,11 @@ router.post("/:hotelId/rate", checkIfAuthorized, async (req, res) => {
       return res.status(400).json({ message: "Invalid rating. Please provide a rating between 1 and 5." });
 
     await hotelService.makeARate(userId, hotelId, rating);
+    await client.del("/hotels"); // Invalidate the hotel list cache
+    await client.del(`/hotels/${hotelId}`);   // Invalidate the hotel details cache
+    const keys = await client.keys("/hotels?location=*");
+    for (const key of keys) await client.del(key); // Invalidate all location-based hotel caches
+
     res.status(200).json({ message: "✅ Hotel rated successfully!" });
   } catch (error) {
     console.error("❌ Error rating hotel:", error);
