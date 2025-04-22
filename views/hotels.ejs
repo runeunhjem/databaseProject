@@ -24,37 +24,35 @@
 
       <!-- ✅ Results Container -->
       <div id="hotel-results" class="hotel-list">
-        <% hotels.forEach(hotel => { %>
-          <div class="hotel-card">
-            <div class="hotel-info">
-              <p class="hotel-name"><%= hotel.name %></p>
-              <p class="hotel-location"><i class="bi bi-geo-alt-fill"></i> <%= hotel.location %></p>
-              <p class="hotel-rating">
-                <i class="bi bi-star-fill"></i>
-                <%= hotel.avgRating ? `${hotel.avgRating} / 5` : "No ratings yet" %>
-              </p>
-            </div>
-            <div class="hotel-actions">
-              <% if (user) { %>
-              <a href="/hotels/<%= hotel.id %>/rooms" class="btn btn-primary"> <i class="bi bi-key"></i> Rent a Room </a>
-              <% } %>
-              <a href="/hotels/<%= hotel.id %>" class="btn btn-secondary"> <i class="bi bi-eye"></i> Details </a>
-              <% if (user && user.role === 'Admin') { %>
-              <button class="btn btn-danger delete-hotel" data-id="<%= hotel.id %>">
-                <i class="bi bi-trash"></i> Delete
-              </button>
-              <% } %>
-            </div>
+        <% if (Array.isArray(hotels)) { %> <% hotels.forEach(hotel => { %>
+        <div class="hotel-card">
+          <div class="hotel-info">
+            <p class="hotel-name"><%= hotel.name %></p>
+            <p class="hotel-location"><i class="bi bi-geo-alt-fill"></i> <%= hotel.location %></p>
+            <p class="hotel-rating">
+              <i class="bi bi-star-fill"></i>
+              <%= hotel.avgRating ? `${hotel.avgRating} / 5` : "No ratings yet" %>
+            </p>
           </div>
-        <% }); %>
+          <div class="hotel-actions">
+            <% if (user) { %>
+            <a href="/hotels/<%= hotel.id %>/rooms" class="btn btn-primary"> <i class="bi bi-key"></i> Rent a Room </a>
+            <% } %>
+            <a href="/hotels/<%= hotel.id %>" class="btn btn-secondary"> <i class="bi bi-eye"></i> Details </a>
+            <% if (user && user.role === 'Admin') { %>
+            <button class="btn btn-danger delete-hotel" data-id="<%= hotel.id %>"><i class="bi bi-trash"></i> Delete</button>
+            <% } %>
+          </div>
+        </div>
+        <% }); %> <% } else { %>
+        <p class="text-warning">Oops! Could not load hotels correctly.</p>
+        <% } %>
       </div>
 
       <!-- ✅ Add Hotel Button -->
       <% if (user && user.role === 'Admin') { %>
       <div class="add-hotel-container">
-        <button id="add-hotel" name="addHotel" class="btn add-hotel-btn">
-          <i class="bi bi-plus-circle"></i> New Hotel
-        </button>
+        <button id="add-hotel" name="addHotel" class="btn add-hotel-btn"><i class="bi bi-plus-circle"></i> New Hotel</button>
       </div>
       <% } %>
     </div>
